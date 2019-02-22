@@ -1,0 +1,22 @@
+page-about {
+  .title {
+    background: transparent;
+  }
+#welcome {
+    // background: color($colors, energy);
+    h3 {
+      text-align: center;
+    }
+    .logo {
+      text-align: center;
+      height: 80px;
+      width: 70px;
+    }
+    .btnLogout {
+      margin-top: 20px;
+    }
+    .scroll-content {
+      overflow-y: auto;
+    }
+  }
+}

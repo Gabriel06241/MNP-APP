@@ -1,0 +1,38 @@
+<!--
+  Generated template for the SettingsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Configuración</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-list-header>
+      <ion-avatar item-start (click)="updateProfileImage()">
+        <img [src]="user.imageUrl ? user.imageUrl : profilePicture">
+      </ion-avatar>
+      <p class="username">{{user.name}}</p>
+      <p>Traceour</p>
+    </ion-list-header>
+  </ion-list>
+  <ion-list no-border>
+    <ion-list-header>
+      General
+    </ion-list-header>
+    <ion-item>
+      <ion-toggle [(ngModel)]="enableNotifications" (click)="toggleNotifications()"></ion-toggle>
+      <ion-label class="label"> Habilitar notificationes </ion-label>
+      <ion-icon name='notifications' item-start></ion-icon>
+    </ion-item>
+  </ion-list>
+</ion-content>

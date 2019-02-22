@@ -1,30 +1,29 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { SharedModule } from "./shared.module";
+import { ErrorHandler, NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import { SplashScreen } from '@ionic-native/splash-screen';
-import { StatusBar } from '@ionic-native/status-bar';
 
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
+
+import { PAGES, MODULES, PROVIDERS } from './app.imports';
+import { DatabaseProvider } from '../providers/database/database';
+import { SpotProvider } from '../providers/spot/spot';
 
 @NgModule({
-  declarations: [
-    MyApp,
-    HomePage
-  ],
+  declarations: [PAGES, MyApp],
   imports: [
-    BrowserModule,
-    IonicModule.forRoot(MyApp)
+    MODULES,
+    IonicModule.forRoot(MyApp,{
+      scrollPadding: false,
+      scrollAssist: true,
+      autoFocusAssist: false
+    }),
+    SharedModule
   ],
   bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp,
-    HomePage
-  ],
-  providers: [
-    StatusBar,
-    SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
-  ]
+  entryComponents: [PAGES, MyApp,],
+  providers: [PROVIDERS, { provide: ErrorHandler, useClass: IonicErrorHandler },
+    DatabaseProvider,
+    SpotProvider],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class AppModule {}
+export class AppModule { }
