@@ -1,5 +1,4 @@
 import { AppState } from './app.global';
-// import { CountdownPage } from './../pages/countdown/countdown';
 import { SettingsPage } from './../pages/settings/settings';
 import { UserProvider } from './../providers/user/user';
 import { UtilsProvider } from './../providers/utils/utils';
@@ -49,33 +48,26 @@ export class MyApp {
   ) {
     this.initializeApp();
 
-    // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Home - Rutinas', component: HomePage, icon: 'md-home', perfil: 'user' },
-      // { title: 'Rutinas', component: CountdownPage, icon: 'md-walk', perfil: 'admin' },
+      { title: 'Rutinas', component: HomePage, icon: 'md-body', perfil: 'user' },
       { title: 'Estadisticas', component: StatisticsPage, icon: 'md-stats', perfil: 'admin' },
       { title: 'Spots', component: SpotsPage, icon: 'md-pin', perfil: 'admin' },
       { title: 'Configuración', component: SettingsPage, icon: 'md-settings', perfil: 'admin' },
       { title: 'Acerca de', component: AboutPage, icon: 'md-information-circle', perfil: 'admin' },
       { title: 'Cerrar Sesión', component: AboutPage, icon: 'md-power', perfil: 'admin' }
     ];
-
-    console.log('console @userProvider -> ', userProvider.getCurrentUser());
+    // console.log('console @userProvider -> ', userProvider.getCurrentUser());
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
-      //*** Control Status Bar
+      // this.checkConnection();
       this.statusBar.styleDefault();
       this.statusBar.overlaysWebView(false);
     });
   }
 
   openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
     if (page.title != 'Cerrar Sesión') {
       this.nav.setRoot(page.component);
     } else {
@@ -169,5 +161,20 @@ export class MyApp {
     this.global.set('theme', theme);
   }
 
-}
+//   checkConnection() {
+//     var networkState = navigator.connection.type;
 
+//     var states = {};
+//     states[Connection.UNKNOWN]  = 'Unknown connection';
+//     states[Connection.ETHERNET] = 'Ethernet connection';
+//     states[Connection.WIFI]     = 'WiFi connection';
+//     states[Connection.CELL_2G]  = 'Cell 2G connection';
+//     states[Connection.CELL_3G]  = 'Cell 3G connection';
+//     states[Connection.CELL_4G]  = 'Cell 4G connection';
+//     states[Connection.CELL]     = 'Cell generic connection';
+//     states[Connection.NONE]     = 'No network connection';
+
+//     alert('Connection type: ' + states[networkState]);
+// }
+
+}

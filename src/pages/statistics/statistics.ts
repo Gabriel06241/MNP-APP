@@ -250,9 +250,9 @@ export class StatisticsPage {
 
   getBarChart() {
     const data = {
-      labels: ['Rutina 1', 'Rutina 2', 'Rutina 3', 'Rutina 4', 'Rutina 5', 'Rutina 6'],
+      labels: ['Cuadrup...', 'Abdomen', 'Brazo', 'Pierna', 'Salto', 'Equilibrio'],
       datasets: [{
-        label: '# de entrenamientos',
+        label: '# de entrenamientos acumulados',
         data: [12, 19, 3, 5, 2, 3],
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
@@ -289,7 +289,7 @@ export class StatisticsPage {
 
   getLineChart() {
     const data = {
-      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
       datasets: [
         {
           label: 'Máximo avance alcanzado',

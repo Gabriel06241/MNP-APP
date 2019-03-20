@@ -9,8 +9,10 @@ import { Crop } from '@ionic-native/crop';
 import { Camera } from '@ionic-native/camera';
 import { Geolocation } from "@ionic-native/geolocation";
 import { GoogleMaps } from "@ionic-native/google-maps";
+import { Network } from '@ionic-native/network';
+// import { Firebase } from '@ionic-native/firebase'
 
-// Pages or Components
+// Pages
 import { LoginPage } from './../pages/login/login';
 import { HomePage } from '../pages/home/home';
 import { AboutPage } from "../pages/about/about";
@@ -23,8 +25,12 @@ import { SettingsPage } from "../pages/settings/settings";
 import { CountdownPage } from "../pages/countdown/countdown";
 import { ExerciseListPage } from "../pages/exercise-list/exercise-list";
 import { SpotsMapPage } from "../pages/spots-map/spots-map";
+import { CommentsPage } from './../pages/comments/comments';
 import { SlidePreheatingPage } from './../pages/slide-preheating/slide-preheating';
+
+// Components
 import { CategoryComponent } from './../components/category/category';
+import { RatingViewComponent } from './../components/rating-view/rating-view';
 
 // Modules
 import { HttpModule } from '@angular/http'
@@ -48,8 +54,12 @@ import { UtilsProvider } from '../providers/utils/utils';
 import { AuthProvider } from '../providers/auth/auth';
 import { RoutineProvider } from '../providers/routine/routine';
 import { DatabaseProvider } from '../providers/database/database';
+import { SpotProvider } from '../providers/spot/spot';
+import { MapServiceProvider } from './../providers/map-service/map-service';
 
 // Directives
+
+// Pipes
 
 // Environment Configuration
 import { ENVIRONMENT } from "../environment/environment";
@@ -68,7 +78,9 @@ export const PAGES = [
   ExerciseListPage,
   SpotsMapPage,
   CategoryComponent,
-  SlidePreheatingPage
+  SlidePreheatingPage,
+  RatingViewComponent,
+  CommentsPage
 ]
 
 export const MODULES = [
@@ -110,7 +122,11 @@ export const PROVIDERS = [
   ImagePicker,
   Crop,
   Geolocation,
-  GoogleMaps
+  GoogleMaps,
+  SpotProvider,
+  MapServiceProvider,
+  Network,
+  // Firebase
 ];
 
 export const DIRECTIVES = [

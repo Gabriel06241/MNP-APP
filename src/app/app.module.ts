@@ -5,11 +5,11 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { PAGES, MODULES, PROVIDERS } from './app.imports';
-import { DatabaseProvider } from '../providers/database/database';
-import { SpotProvider } from '../providers/spot/spot';
+import { SearchPipe } from './../pipes/search';
+import { Firebase } from '@ionic-native/firebase'
 
 @NgModule({
-  declarations: [PAGES, MyApp],
+  declarations: [PAGES, SearchPipe, MyApp],
   imports: [
     MODULES,
     IonicModule.forRoot(MyApp,{
@@ -21,9 +21,7 @@ import { SpotProvider } from '../providers/spot/spot';
   ],
   bootstrap: [IonicApp],
   entryComponents: [PAGES, MyApp,],
-  providers: [PROVIDERS, { provide: ErrorHandler, useClass: IonicErrorHandler },
-    DatabaseProvider,
-    SpotProvider],
+  providers: [PROVIDERS, Firebase, { provide: ErrorHandler, useClass: IonicErrorHandler }],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }

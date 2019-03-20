@@ -1,3 +1,4 @@
+import { ViewController } from 'ionic-angular';
 import { Component } from '@angular/core';
 
 /**
@@ -12,15 +13,25 @@ import { Component } from '@angular/core';
 })
 export class CategoryComponent {
 
-  text: string;
+  filter: any;
 
-  constructor() {
+  constructor(
+    public viewCtrl: ViewController,
+  ) {
     console.log('Hello CategoryComponent Component');
-    this.text = 'Hello World';
   }
 
   filterCategory(param) {
     console.log('En el componente... => ', param);
+    this.filter = param
+    this.close()
+  }
+
+  close() {
+    console.log('close...')
+    this.viewCtrl.dismiss({
+      filter: this.filter
+    });
   }
 
 }

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "731126951527",
+    "firebase_url": "https://mnp-app-892ec.firebaseio.com",
+    "project_id": "mnp-app-892ec",
+    "storage_bucket": "mnp-app-892ec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:731126951527:android:85047c9188ff82ff",
+        "android_client_info": {
+          "package_name": "com.mnp.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "731126951527-cql0jjqs9eb6pcpsr90ul85gtr06fels.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mnp.app",
+            "certificate_hash": "ea0f2a1c0c928af283037af79fbf50b140f5e97c"
+          }
+        },
+        {
+          "client_id": "731126951527-eg2bl8kqursajuldrae9s2il4vhfppmh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOjFwhS_UJqcHnjcO1FL5mtT631jG5km4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "731126951527-eg2bl8kqursajuldrae9s2il4vhfppmh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
