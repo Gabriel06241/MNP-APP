@@ -4,12 +4,11 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { MyApp } from './app.component';
 
-import { PAGES, MODULES, PROVIDERS } from './app.imports';
-import { SearchPipe } from './../pipes/search';
+import { PAGES, MODULES, PROVIDERS, PIPES, DIRECTIVES } from './app.imports';
 import { Firebase } from '@ionic-native/firebase'
 
 @NgModule({
-  declarations: [PAGES, SearchPipe, MyApp],
+  declarations: [PAGES, PIPES, DIRECTIVES, MyApp],
   imports: [
     MODULES,
     IonicModule.forRoot(MyApp,{

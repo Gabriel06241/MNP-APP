@@ -38,6 +38,9 @@ export class SpotsPage {
     public modalCtrl: ModalController,
     // private firebaseCordova: Firebase
   ) {
+
+    this.getSpots();
+
     events.subscribe('star-rating:changed', (starRating) => {
       console.log(starRating);
       this.rating = starRating;
@@ -67,9 +70,9 @@ export class SpotsPage {
     })
   }
 
-  ionViewDidEnter() {
-    this.getSpots()
-  }
+  // ionViewDidEnter() {
+  //   this.getSpots()
+  // }
 
   doRefresh(event) {
     this.spots = [];
@@ -115,9 +118,8 @@ export class SpotsPage {
 
     loading.present();
 
-    let query = firebase.firestore().collection("spot").orderBy("created", "desc")
+    let query = firebase.firestore().collection("spots").orderBy("created", "desc")
       .limit(this.pageSize);
-
       query.onSnapshot((snapshot) => {
         console.log('spot have changed...')
         let changesDocs = snapshot.docChanges();
@@ -137,6 +139,16 @@ export class SpotsPage {
       query.get()
       .then((documents) => {
         documents.forEach((document) => {
+
+          // firebase
+          // .firestore()
+          // .collection("spots").doc(document.id).set(document.data())
+          // .then((create) => {
+          //   console.log('@create new >>>  ', create)
+          // }).catch((error) => {
+          //   console.log('@error new >>>  ', error)
+          // })
+
           this.spots.push({
             spotId: document.id,
             avatarImageUrl: 'assets/imgs/user.svg',
@@ -147,12 +159,10 @@ export class SpotsPage {
             rating: document.data().rating,
             raters: document.data().raters,
             readOnly: false,
-            commentsCount: document.data().commentsCount,
+            commentsCount: document.data().commentsCount || 0,
             color: "red",
             timestamp: this.getTimeAgo(moment.unix(document.data().created.seconds))
           })
-
-
           this.cursor = this.spots[this.spots.length - 1];
         })
         loading.dismiss();
@@ -163,11 +173,21 @@ export class SpotsPage {
   }
 
   loadMoreData(event) {
-    firebase.firestore().collection("spot").orderBy("created", "desc")
+    firebase.firestore().collection("spots").orderBy("created", "desc")
       .startAfter(this.cursor).limit(this.pageSize).get()
       .then((documents) => {
         documents.forEach((document) => {
           console.log('console getSpots() >>>>> ', document);
+
+          // firebase
+          // .firestore()
+          // .collection("spots").doc(document.id).set(document.data())
+          // .then((create) => {
+          //   console.log('@create new #2 >>>  ', create)
+          // }).catch((error) => {
+          //   console.log('@error new #2 >>>  ', error)
+          // })
+
           this.spots.push({
             spotId: document.id,
             avatarImageUrl: 'assets/imgs/user.svg',

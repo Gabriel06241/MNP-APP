@@ -619,3 +619,17 @@ ion-icon[ng-reflect-disabled="true"] {
     }
   }
 }
+
+.backgroundTest {
+  background-color: white;
+  background: url("../assets/imgs/hydrate.png") no-repeat;
+  // background: url("assets/imgs/bg.jpg") no-repeat;
+  // background-size: cover;
+  background-size: 100% 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: 0;
+}

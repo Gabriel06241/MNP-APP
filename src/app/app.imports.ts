@@ -26,7 +26,9 @@ import { CountdownPage } from "../pages/countdown/countdown";
 import { ExerciseListPage } from "../pages/exercise-list/exercise-list";
 import { SpotsMapPage } from "../pages/spots-map/spots-map";
 import { CommentsPage } from './../pages/comments/comments';
+import { ExerciseDetailPage } from './../pages/exercise-detail/exercise-detail';
 import { SlidePreheatingPage } from './../pages/slide-preheating/slide-preheating';
+import { HydratePage } from '../pages/hydrate/hydrate';
 
 // Components
 import { CategoryComponent } from './../components/category/category';
@@ -45,6 +47,7 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { RoundProgressModule, ROUND_PROGRESS_DEFAULTS } from 'angular-svg-round-progressbar';
 import { StarRatingModule } from 'ionic3-star-rating';
 import { Ionic2RatingModule } from 'ionic2-rating';
+import { AgmCoreModule } from '@agm/core';
 
 // Services or Providers
 import { ToastService } from '../providers/utils/toast.service';
@@ -56,10 +59,13 @@ import { RoutineProvider } from '../providers/routine/routine';
 import { DatabaseProvider } from '../providers/database/database';
 import { SpotProvider } from '../providers/spot/spot';
 import { MapServiceProvider } from './../providers/map-service/map-service';
+import { NetworkConnectionProvider } from '../providers/network-connection/network-connection';
 
 // Directives
+import { AutoHideDirective } from "../directives/auto-hide/auto-hide";
 
 // Pipes
+import { SearchPipe } from '../pipes/search';
 
 // Environment Configuration
 import { ENVIRONMENT } from "../environment/environment";
@@ -80,7 +86,9 @@ export const PAGES = [
   CategoryComponent,
   SlidePreheatingPage,
   RatingViewComponent,
-  CommentsPage
+  CommentsPage,
+  ExerciseDetailPage,
+  HydratePage
 ]
 
 export const MODULES = [
@@ -95,7 +103,10 @@ export const MODULES = [
   RoundProgressModule,
   ChartsModule,
   StarRatingModule,
-  Ionic2RatingModule
+  Ionic2RatingModule,
+  AgmCoreModule.forRoot({
+    apiKey: 'AIzaSyBR5tBOm2e05Uc5CCvygdLQK2AD4guNSHM'
+  })
 ];
 
 export const PROVIDERS = [
@@ -126,9 +137,14 @@ export const PROVIDERS = [
   SpotProvider,
   MapServiceProvider,
   Network,
+  NetworkConnectionProvider
   // Firebase
 ];
 
 export const DIRECTIVES = [
+  AutoHideDirective
+];
 
+export const PIPES = [
+  SearchPipe
 ];

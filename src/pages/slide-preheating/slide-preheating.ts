@@ -1,6 +1,6 @@
 import { CountdownPage } from './../countdown/countdown';
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, Slides } from 'ionic-angular';
+import { IonicPage, NavController, Slides, NavParams } from 'ionic-angular';
 
 /**
  * Generated class for the SlidePreheatingPage page.
@@ -44,18 +44,29 @@ export class SlidePreheatingPage {
       imageStageDetail: ''
     }
   ];
+  exercises: any[] = [];
 
-  constructor(public navCtrl: NavController) { }
+  constructor(
+    public navCtrl: NavController, 
+    public navParams: NavParams
+  ) {
+    this.exercises = this.navParams.get("exercises");
+    console.log('exercises >>>> ', this.exercises);
+  }
 
   onSlideChanged() {
     this.slideIndex = this.slider.getActiveIndex();
   }
 
   goToApp() {
-    this.navCtrl.setRoot(CountdownPage);
+    console.log('exercises ##"22 >>>> ', this.exercises);
+    this.navCtrl.setRoot(CountdownPage, {
+      "exercises": this.exercises
+    });
   }
 
   skip() {
     this.navCtrl.pop();
   }
+
 }

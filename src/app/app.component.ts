@@ -3,7 +3,7 @@ import { SettingsPage } from './../pages/settings/settings';
 import { UserProvider } from './../providers/user/user';
 import { UtilsProvider } from './../providers/utils/utils';
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, AlertController, ActionSheetController } from 'ionic-angular';
+import { Nav, Platform, AlertController, ActionSheetController, LoadingController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -15,6 +15,7 @@ import { Camera } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { Crop } from '@ionic-native/crop';
 import { StatisticsPage } from '../pages/statistics/statistics';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 export interface MenuItem {
   title: string;
@@ -44,7 +45,9 @@ export class MyApp {
     public imagePicker: ImagePicker,
     public camera: Camera,
     public cropService: Crop,
-    public global: AppState
+    public loadingCtrl: LoadingController,
+    public global: AppState,
+    public afAuth: AngularFireAuth,
   ) {
     this.initializeApp();
 
@@ -57,6 +60,11 @@ export class MyApp {
       { title: 'Cerrar Sesión', component: AboutPage, icon: 'md-power', perfil: 'admin' }
     ];
     // console.log('console @userProvider -> ', userProvider.getCurrentUser());
+    console.log('User log settings.. ', this.userProvider.getCurrentUser())
+    this.afAuth.auth.onAuthStateChanged((currentUser) => {
+      console.log('On Constructor - currentUser >>>> ', currentUser)
+      this.profilePicture = currentUser.photoURL;
+    });
   }
 
   initializeApp() {
@@ -96,18 +104,29 @@ export class MyApp {
 
   presentActionSheet() {
     let actionSheet = this.actionSheetCtrl.create({
-      title: 'Choose or take a picture',
+      title: 'Seleccione tu foto de perfil',
       buttons: [
         {
-          text: 'Take a picture',
+          text: 'Tomar foto',
+          icon: !this.platform.is('ios') ? 'camera' : null,
           handler: () => {
             this.takePicture();
           }
         },
         {
-          text: 'Choose pictures',
+          text: 'Seleccionar imagen',
+          icon: !this.platform.is('ios') ? 'image' : null,
           handler: () => {
-            this.openImagePicker();
+            // this.openImagePicker();
+            this.getPicture();
+          }
+        },
+        {
+          text: 'Cancelar',
+          icon: !this.platform.is('ios') ? 'close' : null,
+          role: 'destructive',
+          handler: () => {
+            console.log('Evento cancelado por el usuario.');
           }
         }
       ]
@@ -115,7 +134,7 @@ export class MyApp {
     actionSheet.present();
   }
 
-  takePicture() {
+  takePictures() {
     let options = {
       quality: 100,
       correctOrientation: true
@@ -126,10 +145,13 @@ export class MyApp {
         this.cropService
           .crop(data, { quality: 75 })
           .then((newImage) => {
-            this.photos.push(newImage);
-            this.profilePicture = newImage;
+            console.log('newImage >>> ', newImage);
+            if (newImage) {
+              this.photos.push(newImage);
+              this.profilePicture = newImage;
+            }
           }, error => console.error("Error cropping image", error));
-      }, function (error) {
+      }, (error) => {
         console.log(error);
       });
   }
@@ -141,6 +163,7 @@ export class MyApp {
     this.photos = new Array<string>();
     this.imagePicker.getPictures(options)
       .then((results) => {
+        console.log('results  >>>  ', results);
         this.reduceImages(results).then(() => {
           console.log('all images cropped!!');
         });
@@ -161,20 +184,68 @@ export class MyApp {
     this.global.set('theme', theme);
   }
 
-//   checkConnection() {
-//     var networkState = navigator.connection.type;
 
-//     var states = {};
-//     states[Connection.UNKNOWN]  = 'Unknown connection';
-//     states[Connection.ETHERNET] = 'Ethernet connection';
-//     states[Connection.WIFI]     = 'WiFi connection';
-//     states[Connection.CELL_2G]  = 'Cell 2G connection';
-//     states[Connection.CELL_3G]  = 'Cell 3G connection';
-//     states[Connection.CELL_4G]  = 'Cell 4G connection';
-//     states[Connection.CELL]     = 'Cell generic connection';
-//     states[Connection.NONE]     = 'No network connection';
 
-//     alert('Connection type: ' + states[networkState]);
-// }
+  takePicture() {
+    const loading = this.loadingCtrl.create();
+    loading.present();
+    return this.getPictureFromCamera().then(picture => {
+      if (picture) {
+        this.profilePicture = picture;
+      }
+      loading.dismiss();
+    }, error => {
+      alert(error);
+    });
+  }
+
+  getPicture() {
+    const loading = this.loadingCtrl.create();
+    loading.present();
+    return this.getPictureFromPhotoLibrary().then(picture => {
+      if (picture) {
+        this.profilePicture = picture;
+      }
+      loading.dismiss();
+    }, error => {
+      alert(error);
+    });
+  }
+
+  getPictureFromCamera() {
+    return this.getImage(this.camera.PictureSourceType.CAMERA, true);
+  }
+
+  getPictureFromPhotoLibrary() {
+    return this.getImage(this.camera.PictureSourceType.PHOTOLIBRARY, true);
+  }
+
+  // This method takes optional parameters to make it more customizable
+  getImage(pictureSourceType, crop = false, quality = 75, allowEdit = true, saveToAlbum = true) {
+    console.log('@crop  >>>> ', crop)
+    const options = {
+      quality,
+      allowEdit,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      sourceType: pictureSourceType,
+      encodingType: this.camera.EncodingType.PNG,
+      saveToPhotoAlbum: saveToAlbum,
+      targetWidth: 600,
+      targetHeight: 600
+    };
+
+    // If set to crop, restricts the image to a square of 600 by 600
+    // if (crop) {
+    //   options['targetWidth'] = 600;
+    //   options['targetHeight'] = 600;
+    // }
+
+    return this.camera.getPicture(options).then(imageData => {
+      const base64Image = 'data:image/png;base64,' + imageData;
+      return base64Image;
+    }, error => {
+      console.log('CAMERA ERROR -> ' + JSON.stringify(error));
+    });
+  }
 
 }

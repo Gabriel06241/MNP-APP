@@ -1,11 +1,13 @@
-import { Network } from '@ionic-native/network';
 import { UtilsProvider } from './../../providers/utils/utils';
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController, ToastController } from 'ionic-angular';
+import { NavController, NavParams, AlertController, ToastController, Events } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { UserProvider } from '../../providers/user/user';
 import { HomePage } from "./../home/home";
 import { UserPage } from "./../user/user";
+import { Subscription} from 'rxjs/Subscription';
+import { MESSAGE_ERROR } from "./../../app/app.errors";
+import { Network } from '@ionic-native/network';
 
 @Component({
   selector: 'page-login',
@@ -15,7 +17,10 @@ export class LoginPage {
 
   user: any = {};
   resetPassword = false;
-  error: any;
+  connected: Subscription;
+  disconnected: Subscription;
+  // flag: boolean = false;
+  flag: boolean = true;
 
   constructor(
     public navCtrl: NavController,
@@ -27,39 +32,30 @@ export class LoginPage {
     public utilsProvider: UtilsProvider,
     private network: Network
   ) {
-    let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
-      console.log('network was disconnected :-(');
-      this.utilsProvider.showToast('network was disconnected :-(');
-    });
+    this.connected = this.network.onConnect().subscribe(data => {
+      console.log(' >>>>>>>> connected', data);
+      this.flag = true;
+      // this.displayNetworkUpdate(data.type);
+    }, error => console.error(error));
 
-    // stop disconnect watch
-    disconnectSubscription.unsubscribe();
-
-    // watch network for a connection
-    let connectSubscription = this.network.onConnect().subscribe(() => {
-      console.log('network connected!');
-      this.utilsProvider.showToast('network connected!');
-
-      setTimeout(() => {
-        if (this.network.type === 'wifi') {
-          console.log('we got a wifi connection, woohoo!');
-          this.utilsProvider.showToast('we got a wifi connection, woohoo!');
-        }
-      }, 3000);
-    });
-
-    // stop connect watch
-    connectSubscription.unsubscribe();
-
+    this.disconnected = this.network.onDisconnect().subscribe(data => {
+      console.log(' >>>>>>>> disconnected', data);
+      this.flag = false;
+      // this.displayNetworkUpdate(data.type);
+    }, error => console.error(error));
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
+  displayNetworkUpdate(connectionState: string) {
+    let networkType = this.network.type;
+    this.utilsProvider.showToast(`You are now ${connectionState} via ${networkType}`);
+  }
+
+  ionViewWillLeave() {
+    this.connected.unsubscribe();
+    this.disconnected.unsubscribe();
   }
 
   registerUser() {
-    const internetConnection = this.checkConnection();
-    console.log('checking internet connection before go on register page...', internetConnection)
     this.navCtrl.setRoot(UserPage);
   }
 
@@ -67,14 +63,15 @@ export class LoginPage {
     if (this.utilsProvider.validateDataUser(user)) {
       return this.utilsProvider.showAlert("Error campos vacíos", "Por favor complete todos los campos.");
     }
-    const internetConnection = this.checkConnection();
+    const internetConnection = this.utilsProvider.checkConnection();
     if (!internetConnection) {
-      this.utilsProvider.showAlert('Lo sentimos', 'Revisa tu conexion a internet.');
+      this.utilsProvider.showAlert('Ooops, Lo sentimos...', 'Revisa tu conexion a internet!');
     } else {
       this.utilsProvider.showLoading('Por favor espere...');
       try {
         await this.userProvider.getUserFromFieldValue('email', user.email)
           .then((response) => {
+            console.log('response[0] >>>> ', response[0]);
             this.userProvider.setCurrentUser(response[0]);
             if (response.length) {
               user.exist = true;
@@ -84,7 +81,7 @@ export class LoginPage {
                 user.emailVerified = currentUser.emailVerified;
                 currentUser.updateProfile({
                   displayName: user.fullName,
-                  photoURL: 'some/url'
+                  photoURL: 'assets/imgs/user.svg'
                 });
               });
             }
@@ -98,7 +95,6 @@ export class LoginPage {
       if (!user.exist) {
         this.utilsProvider.showToast("Correo y/o contraseña incorrectos!");
       } else {
-        // this.utilsProvider.showLoading('Por favor espere...');
         try {
           const result = await this.afAuth.auth.signInWithEmailAndPassword(user.email, this.utilsProvider.getHashMd5(user.password))
           if (result) {
@@ -106,7 +102,8 @@ export class LoginPage {
           }
         } catch (error) {
           if (error) {
-            this.utilsProvider.showToast(error.message);
+            console.log('@error >> ', error)
+            this.utilsProvider.showToast(MESSAGE_ERROR[error.code]);
           }
         }
       }
@@ -116,8 +113,8 @@ export class LoginPage {
   forgotPassword() {
     let forgot = this.forgotCtrl.create({
       title: 'Recuperar contraseña',
-      message: "Ingrese su correo para restablecer su contraseña.",
-      inputs: [{ name: 'email', placeholder: 'Correo', type: 'email' }],
+      message: "Ingrese su correo para restablecer la contraseña.",
+      inputs: [{ name: 'email', placeholder: 'Correo electrónico', type: 'email' }],
       buttons: [
         {
           text: 'Cancelar',
@@ -128,7 +125,7 @@ export class LoginPage {
         {
           text: 'Recuperar',
           handler: data => {
-            this.checkConnection();
+            // this.utilsProvider.checkConnection();
             this.sendResetEmail(data.email).then((response) => {
               console.log('@response => ', JSON.stringify(response));
               let toastMsg = this.toastCtrl.create({
@@ -139,15 +136,11 @@ export class LoginPage {
                 closeButtonText: 'OK',
                 showCloseButton: true
               })
-              if (response && !response['error']) {
-                toastMsg.present();
-              } else {
-                toastMsg.setMessage('Por favor ingrese valido!');
-                toastMsg.present();
+              if (response['error']) {
+                toastMsg.setMessage(MESSAGE_ERROR[response['error'].code]);
               }
-            }).catch(error => {
-              console.log('@error => ', error);
-            });
+              toastMsg.present();
+            })
           }
         }
       ]
@@ -157,38 +150,10 @@ export class LoginPage {
 
   sendResetEmail(email) {
     return this.afAuth.auth.sendPasswordResetEmail(email)
-      .then(() => this.resetPassword = true)
-      .catch(_error => {
-        this.error = _error.message
-        return { error: 'error' };
-      })
-  }
-
-
-  checkConnection() {
-    let networkState = null;
-
-    setTimeout(() => {
-      networkState = this.network.type;
-    }, 3000)
-
-    let states = {};
-    states[this.network.Connection.UNKNOWN] = 'Unknown connection';
-    states[this.network.Connection.ETHERNET] = 'Ethernet connection';
-    states[this.network.Connection.WIFI] = 'WiFi connection';
-    states[this.network.Connection.CELL_2G] = 'Cell 2G connection';
-    states[this.network.Connection.CELL_3G] = 'Cell 3G connection';
-    states[this.network.Connection.CELL_4G] = 'Cell 4G connection';
-    states[this.network.Connection.CELL] = 'Cell generic connection';
-    states[this.network.Connection.NONE] = 'No network connection';
-
-    console.log('checking internet connection... ', networkState)
-
-    if (states[networkState] == 'No network connection') {
-      return false;
-      // this.utilsProvider.showAlert('Lo sentimos', 'Revisa tu conexion a internet, ' + states[networkState] + '.');
-    }
-    return true;
+    .then(() => this.resetPassword = true)
+    .catch(_error => {
+      return { error: _error };
+    })
   }
 
 }

@@ -13,7 +13,8 @@ import { storage } from "firebase";
 })
 export class SpotPage {
 
-  base64Image: string = '';
+  defaultImage = 'assets/imgs/spots/spot_default_location.svg';
+  base64Image: string = this.defaultImage;
   pathImage: string = '';
   markers = [];
   ref = firebase.database().ref('geolocations/');
@@ -93,15 +94,15 @@ export class SpotPage {
   }
 
   saveSpot() {
-    if (this.base64Image == '' || !this.base64Image) {
-      this.utilsProvider.showAlert('Advertencia', 'Debes tomas una foto para poder guardar el spot');
+    if (this.base64Image == this.defaultImage || !this.base64Image) {
+      this.utilsProvider.showAlert('Advertencia', 'Debes ' + ((!this.spotName || !this.spotDescription) ? 'completar todos los campos y ' : '') + 'tomar una foto para guardar el spot');
     } else {
       let load = this.loadingCtrl.create({
         content: 'Espera por favor...',
       });
       load.present();
 
-      firebase.firestore().collection("spot").add({
+      firebase.firestore().collection("spots").add({
         name: this.spotName,
         description: this.spotDescription,
         created: firebase.firestore.FieldValue.serverTimestamp(),
@@ -149,7 +150,7 @@ export class SpotPage {
       }, () => {
         // Handle successful uploads on complete
         uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-          firebase.firestore().collection("spot").doc(documentId).update({ photoUrl: downloadURL }).then(() => {
+          firebase.firestore().collection("spots").doc(documentId).update({ photoUrl: downloadURL }).then(() => {
             loading.dismiss()
             resolve()
           }).catch(() => {

@@ -54,7 +54,7 @@ export class RatingViewComponent {
     this.spotData.rating.acumulator += this.rating;
     this.spotData.rating.average = this.spotData.rating.acumulator / this.spotData.rating.count;
     this.spotData.raters.push(this.currentUser);
-    firebase.firestore().collection("spot").doc(this.navParams.get('event').spotId).update(
+    firebase.firestore().collection("spots").doc(this.navParams.get('event').spotId).update(
       {
         "rating.count": this.spotData.rating.count,
         "rating.acumulator": this.spotData.rating.acumulator,

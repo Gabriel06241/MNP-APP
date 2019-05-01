@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ExerciseListPage } from '../exercise-list/exercise-list';
 import { DatabaseProvider } from '../../providers/database/database';
 import { CategoryComponent } from './../../components/category/category';
+import { UtilsProvider } from "../../providers/utils/utils";
 import firebase from 'firebase';
 import { Firebase } from '@ionic-native/firebase'
 // import * as firebase from 'firebase';
@@ -17,7 +18,7 @@ export class HomePage {
 
   imageUrl: string;
   popover: any;
-  public isSearchbarOpening = false;
+  isSearchbarOpening = false;
   searchQuery: string = '';
   routines: any = [];
   routinesNotFiltered: any = [];
@@ -31,6 +32,7 @@ export class HomePage {
     public http: HttpClient,
     public navParams: NavParams,
     private _DB: DatabaseProvider,
+    private utils: UtilsProvider,
     private firebaseCordova: Firebase
   ) {
     this.getRoutines();
@@ -59,10 +61,6 @@ export class HomePage {
     })
   }
 
-  // ionViewDidEnter() {
-  //   this.getRoutines();
-  // }
-
   onSearch(event) {
     console.log('@event >>> ', event);
   }
@@ -75,15 +73,15 @@ export class HomePage {
 
     this.popover.onWillDismiss((data) => {
       let routinesFilter = []
-      let arrayToFilter = (!this.routinesNotFiltered.length) ? 'routines' : 'routinesNotFiltered';
-      if (data.filter) {
+      let arrayToFilter = (JSON.stringify(this.routines) == JSON.stringify(this.routinesNotFiltered)) ? 'routines' : 'routinesNotFiltered';
+      if (data && data.filter) {
         this[arrayToFilter].filter((item) => {
           console.log(item);
           if (item.category == data.filter) {
             routinesFilter.push(item);
           }
         });
-        this.routinesNotFiltered = this.routines;
+        // this.routinesNotFiltered = this.routines;
         this.routines = routinesFilter;
       }
     });
@@ -101,7 +99,7 @@ export class HomePage {
     this.routines = [];
     this.exercises = [];
 
-    let queryExercises = firebase.firestore().collection("excercises");
+    let queryExercises = firebase.firestore().collection("exercises");
     queryExercises.get()
       .then((documents) => {
         documents.forEach((document) => {
@@ -109,7 +107,7 @@ export class HomePage {
             id: document.id,
             name: document.data().name,
             description: document.data().descripcion,
-            imageName: this.removeAccents(document.data().name) + '.gif'
+            imageName: this.utils.removeAccents(document.data().name) + '.gif'
           })
         })
       }).catch((error) => {
@@ -123,13 +121,15 @@ export class HomePage {
     queryRoutines.get()
       .then((documents) => {
         documents.forEach((document) => {
+          console.log(' document >>>> ', document.data())
           this.routines.push({
             id: document.id,
             category: document.data().categoria,
             title: document.data().nombre,
             body: document.data().descripcion,
             imageUrl: 'assets/exercises/' + this.filterExercisesByDocId(document.data().ejercicios[this.getRandomInt(document.data().ejercicios.length)]),
-            exercises: document.data().ejercicios
+            exercises: document.data().ejercicios,
+            muscles: document.data().musculos
           })
         })
         console.log('@routines  >>>>  ', this.routines)
@@ -155,18 +155,6 @@ export class HomePage {
       }
     });
     return imageName;
-  }
-
-  removeAccents(str) {
-    let result = str.toLowerCase();
-    result = result.replace(new RegExp(/\s/g), "_");
-    result = result.replace(new RegExp(/[àáâãäå]/g), "a");
-    result = result.replace(new RegExp(/[èéêë]/g), "e");
-    result = result.replace(new RegExp(/[ìíîï]/g), "i");
-    // result = result.replace(new RegExp(/ñ/g), "n");
-    result = result.replace(new RegExp(/[òóôõö]/g), "o");
-    result = result.replace(new RegExp(/[ùúûü]/g), "u");
-    return result;
   }
 
 }

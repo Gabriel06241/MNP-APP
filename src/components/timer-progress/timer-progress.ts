@@ -29,6 +29,7 @@ export class TimerProgress {
   private transform;
   private percent;
   private fixTransform;
+  currentExerciseNumber = 1;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -39,6 +40,7 @@ export class TimerProgress {
   ngOnInit() {
     this.timeInSeconds = 300;
     this.initTimer();
+    this.startTimer();
   }
 
   hasFinished() {
@@ -83,6 +85,23 @@ export class TimerProgress {
   }
 
   timerTick() {
+    console.log(' >>>>> ', this.timer.secondsRemaining)
+
+    switch (this.timer.secondsRemaining) {
+      case 60:
+        this.currentExerciseNumber = 2;
+        break;
+      case 120:
+        this.currentExerciseNumber = 3;
+        break;
+      case 180:
+        this.currentExerciseNumber = 4;
+        break;
+      case 240:
+        this.currentExerciseNumber = 5;
+        break;
+    }
+
     setTimeout(() => {
       if (!this.timer.runTimer) { return; }
       // this.timer.secondsRemaining--;

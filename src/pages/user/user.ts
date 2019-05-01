@@ -52,7 +52,6 @@ export class UserPage {
         console.log('console @response -> ', response);
         if (response.length) {
           return this.utilsProvider.showAlert("Alerta de error", "El correo " + user.email + " ya se encuentra registrado!");
-          // this.utilsProvider.showToast('Correo electronico ya se encuentra registrado!');
         }
       });
 
@@ -64,12 +63,14 @@ export class UserPage {
             console.log('@currentUser ====>>>> ', currentUser);
             currentUser.updateProfile({
               displayName: user.fullName,
-              photoURL: 'some/url'
+              photoURL: 'assets/imgs/user.svg'
             });
           });
           this.afAuth.auth.currentUser.sendEmailVerification();
           user.id = result.user.uid;
           user.activo = true;
+          user.notification = false;
+          user.avatarUrl = 'assets/imgs/user.svg';
           this.userProvider.createOrUpdateUser(user);
           this.utilsProvider.showToast('Usuario creado correctamente!');
           this.navCtrl.setRoot(LoginPage);
@@ -80,7 +81,9 @@ export class UserPage {
     } else {
       user.perfil = 'user';
       user.saldo = 0;
-      user.activo = 1;
+      user.activo = true;
+      user.notification = false;
+      user.avatarUrl = 'assets/imgs/user.svg';
       this.userProvider.createOrUpdateUser(user);
       this.utilsProvider.showToast('Usuario actualizado exitosamente!');
       this.navCtrl.pop();
