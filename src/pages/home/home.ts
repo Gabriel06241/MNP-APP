@@ -7,8 +7,6 @@ import { CategoryComponent } from './../../components/category/category';
 import { UtilsProvider } from "../../providers/utils/utils";
 import firebase from 'firebase';
 import { Firebase } from '@ionic-native/firebase'
-// import * as firebase from 'firebase';
-// import 'firebase/firestore';
 
 @Component({
   selector: 'page-home',
@@ -37,12 +35,8 @@ export class HomePage {
   ) {
     this.getRoutines();
     this.routinesNotFiltered = this.routines;
-
     this.firebaseCordova.getToken().then((token) => {
-      console.log('@token >>> ', token);
-
       this.updateToken(token, firebase.auth().currentUser.uid)
-
     }).catch((error) => {
       console.log('@error <<<<<< ', error)
     })
@@ -68,24 +62,18 @@ export class HomePage {
   presentPopover(event: Event) {
     this.popover = this.popoverCtrl.create(CategoryComponent);
     this.popover.present({ ev: event });
-
-    console.log('Load the present()....');
-
     this.popover.onWillDismiss((data) => {
       let routinesFilter = []
       let arrayToFilter = (JSON.stringify(this.routines) == JSON.stringify(this.routinesNotFiltered)) ? 'routines' : 'routinesNotFiltered';
       if (data && data.filter) {
         this[arrayToFilter].filter((item) => {
-          console.log(item);
           if (item.category == data.filter) {
             routinesFilter.push(item);
           }
         });
-        // this.routinesNotFiltered = this.routines;
         this.routines = routinesFilter;
       }
     });
-
   }
 
   doRefresh(event) {
@@ -98,7 +86,6 @@ export class HomePage {
   getRoutines() {
     this.routines = [];
     this.exercises = [];
-
     let queryExercises = firebase.firestore().collection("exercises");
     queryExercises.get()
       .then((documents) => {
@@ -114,29 +101,23 @@ export class HomePage {
         console.log(error);
       })
 
-    // let queryRoutines = firebase.firestore().collection("routines").orderBy("created", "desc")
-    let queryRoutines = firebase.firestore().collection("routines")
-      .limit(this.pageSize);
-
+    let queryRoutines = firebase.firestore().collection("routines").limit(this.pageSize);
     queryRoutines.get()
-      .then((documents) => {
-        documents.forEach((document) => {
-          console.log(' document >>>> ', document.data())
-          this.routines.push({
-            id: document.id,
-            category: document.data().categoria,
-            title: document.data().nombre,
-            body: document.data().descripcion,
-            imageUrl: 'assets/exercises/' + this.filterExercisesByDocId(document.data().ejercicios[this.getRandomInt(document.data().ejercicios.length)]),
-            exercises: document.data().ejercicios,
-            muscles: document.data().musculos
-          })
+    .then((documents) => {
+      documents.forEach((document) => {
+        this.routines.push({
+          id: document.id,
+          category: document.data().categoria,
+          title: document.data().nombre,
+          body: document.data().descripcion,
+          imageUrl: 'assets/exercises/' + this.filterExercisesByDocId(document.data().ejercicios[this.getRandomInt(document.data().ejercicios.length)]),
+          exercises: document.data().ejercicios,
+          muscles: document.data().musculos
         })
-        console.log('@routines  >>>>  ', this.routines)
-      }).catch((error) => {
-        console.log(error);
       })
-
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   getExerciseFromRoutine(routine) {

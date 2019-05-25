@@ -2,13 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { RoundProgressEase } from 'angular-svg-round-progressbar';
 
-/**
- * Generated class for the RoutinesPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-routines',
@@ -41,10 +34,6 @@ export class RoutinesPage {
     }
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad RoutinesPage');
-  }
-
   getOverlayStyle() {
     let isSemi = this.semicircle;
     let transform = (isSemi ? '' : 'translateY(-50%) ') + 'translateX(-50%)';
@@ -60,8 +49,6 @@ export class RoutinesPage {
     };
   }
 
-  doSomethingWithCurrentValue(event: any) {
-
-  }
+  doSomethingWithCurrentValue(event: any) { }
 
 }

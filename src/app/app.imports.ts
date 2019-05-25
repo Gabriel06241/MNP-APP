@@ -1,7 +1,7 @@
 // Global state (used for theming)
 import { AppState } from './app.global';
 
-// Ionic native providers o services
+// Ionic native providers/services
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { ImagePicker } from '@ionic-native/image-picker';
@@ -10,6 +10,7 @@ import { Camera } from '@ionic-native/camera';
 import { Geolocation } from "@ionic-native/geolocation";
 import { GoogleMaps } from "@ionic-native/google-maps";
 import { Network } from '@ionic-native/network';
+import { NativeAudio } from '@ionic-native/native-audio';
 // import { Firebase } from '@ionic-native/firebase'
 
 // Pages
@@ -137,7 +138,8 @@ export const PROVIDERS = [
   SpotProvider,
   MapServiceProvider,
   Network,
-  NetworkConnectionProvider
+  NetworkConnectionProvider,
+  NativeAudio
   // Firebase
 ];
 

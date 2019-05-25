@@ -46,11 +46,11 @@ export class SpotPage {
 
   getPosition() {
     this.geolocation.getCurrentPosition()
-      .then((geoposition) => {
-        console.log('getCurrentPosition () >>>> ', geoposition);
-        this.latitude = geoposition.coords.latitude;
-        this.longitude = geoposition.coords.longitude;
-      }).catch(error => { console.log('Error in getPosition() >> ', error); });
+    .then((geoposition) => {
+      console.log('getCurrentPosition () >>>> ', geoposition);
+      this.latitude = geoposition.coords.latitude;
+      this.longitude = geoposition.coords.longitude;
+    }).catch(error => { console.log('Error in getPosition() >> ', error); });
   }
 
   updateGeolocation(uuid, lat, lng) {

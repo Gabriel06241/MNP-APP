@@ -1,6 +1,14 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
-import { IonicPage, NavController, NavParams, Slides, MenuController, ModalController, ViewController } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, Slides, MenuController, ModalController, ViewController, ToastController } from 'ionic-angular';
 import { HydratePage } from '../hydrate/hydrate';
+import { ExerciseDetailPage } from '../exercise-detail/exercise-detail';
+import { AlertService } from '../../providers/utils/alert.service';
+import { HomePage } from '../home/home';
+import { UtilsProvider } from '../../providers/utils/utils';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { UserProvider } from '../../providers/user/user';
+import moment from 'moment';
+import firebase from 'firebase';
 
 @IonicPage()
 @Component({
@@ -16,55 +24,60 @@ export class CountdownPage {
   currentPosition: number = 1;
   disabledNextButton: boolean = false;
   disabledFinishButton: boolean = true;
+  dateTimeStart: any = 0;
+  dateTimeEnd: any = 0;
+  currentUserId: any = '';
+  hiddenNextBtn: any = false;
+  hiddenEndBtn: any = true;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
     public menuCtrl: MenuController,
     public modalCtrl: ModalController,
-    public viewCtrl: ViewController
+    public viewCtrl: ViewController,
+    public alertService: AlertService,
+    public utilsProvider: UtilsProvider,
+    public userProvider: UserProvider,
+    public afAuth: AngularFireAuth,
+    public toastCtrl: ToastController,
   ) {
     this.exercises = this.navParams.get("exercises");
-    console.log('>>>>> CountdownPage exercises ', this.exercises)
     this.currentExercise = this.exercises[0];
-    // this.qtyExercise = this.currentExercise.length;
-    console.log('>>>>>  currentExercise >>> ', this.currentExercise)
+    this.dateTimeStart = moment();
+    this.afAuth.auth.onAuthStateChanged((currentUser) => {
+      this.currentUserId = currentUser.uid;
+    });
   }
 
   ngOnInit() {
     this.menuCtrl.enable(true);
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad CountdownPage');
-  }
-
   onSlideChanged() {
-    console.log('console @slider => ', this.slider);
     this.slideIndex = this.slider.getActiveIndex();
   }
 
   nextExercise(index) {
-    console.log(' length >>> ', this.exercises.length)
     if (this.currentPosition < this.exercises.length) {
-      console.log('this.currentPosition #1 >>> ', this.currentPosition)
       let hydrateModal = this.modalCtrl.create(HydratePage)
       hydrateModal.present();
-      console.log('HOLA>>>')
       setTimeout(function() {
-        console.log('viewCtrl...')
-        // this.navCtrl.pop();
+        this.utilsProvider.preload('tabSwitch', 'assets/sounds/countdown.mp3');
+        this.utilsProvider.play('tabSwitch');
+      }.bind(this), 5000);
+
+      setTimeout(function() {
         hydrateModal.dismiss();
-        // this.viewCtrl.dismiss();
-        // this.close();
-      }, 3000);
-      // this.modalCtrl.create(CommentsPage, {'spot': {'spotId':'214'}}).present();
-      // this.openModal(CommentsPage);
+      }, 10000);
       this.currentExercise = this.exercises[this.currentPosition];
       this.currentPosition = ++index;
-      console.log('this.currentPosition #2 >>> ', this.currentPosition)
+      if (this.currentPosition == 5) {
+        this.hiddenNextBtn = true;
+        this.hiddenEndBtn = false;
+        this.disabledFinishButton = false;
+      }
     } else {
-      console.log(' ELSE >>>>> ')
       this.disabledNextButton = true;
       this.disabledFinishButton = false;
     }
@@ -72,12 +85,52 @@ export class CountdownPage {
 
   openModal(pageName) {
     this.modalCtrl.create(pageName, {'spotId': ''}, { cssClass: 'inset-modal'}).present();
-    // this.modalCtrl.create(pageName, null, { cssClass: 'inset-modal'}).present();
   }
 
   close() {
-  // close(): void {
     this.viewCtrl.dismiss();
+  }
+
+  viewExerciseDetail() {
+    this.modalCtrl.create(ExerciseDetailPage, {
+      "exercise": this.currentExercise
+    }).present();
+  }
+
+  routineTimeFinished() {
+    this.dateTimeEnd = moment();
+    let userTraining = {
+      timeStart: this.dateTimeStart.format(),
+      timeEnd: this.dateTimeEnd.format(),
+      // timeDiff: moment(this.dateTimeEnd).diff(this.dateTimeStart, 'seconds') - 300,
+      timeDiff: moment(this.dateTimeEnd).diff(this.dateTimeStart, 'seconds'),
+      userId: this.currentUserId,
+      routineId: this.currentExercise.routineId,
+      routineName: this.currentExercise.routineName,
+      routineCategory: this.currentExercise.routineCategory
+    }
+    firebase.firestore().collection('userTrainings').add(userTraining).then((doc) => {
+      this.toastCtrl.create({
+        message: 'Comentario guardado correctamene!',
+        duration: 3000
+      })
+    }).catch((error) => {
+      this.toastCtrl.create({
+        message: error.message,
+        duration: 3000
+      }).present();
+    })
+    this.utilsProvider.showAlert('Felicitaciones', 'Rutina terminada con exito.');
+    this.navCtrl.setRoot(HomePage)
+  }
+
+  cancelRoutine() {
+    this.alertService.presentAlertWithCallback('¿Estas seguro de cancelar?', 'El entrenamiento de la rutina se cancelara.')
+    .then((yes) => {
+      if (yes) {
+        this.navCtrl.setRoot(HomePage);
+      }
+    })
   }
 
 }

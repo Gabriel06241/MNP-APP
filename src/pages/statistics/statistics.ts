@@ -2,13 +2,13 @@ import { Component, ViewChild  } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 
 import chartJs from 'chart.js';
+import { DatabaseProvider } from '../../providers/database/database';
+import { UserProvider } from '../../providers/user/user';
+import firebase from 'firebase';
+import { AngularFireAuth } from 'angularfire2/auth';
 
-/**
- * Generated class for the StatisticsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import moment from 'moment';
+import { UtilsProvider } from '../../providers/utils/utils';
 
 @IonicPage()
 @Component({
@@ -17,15 +17,7 @@ import chartJs from 'chart.js';
 })
 export class StatisticsPage {
   @ViewChild('barCanvas') barCanvas;
-  // @ViewChild('doughnutCanvas') doughnutCanvas;
-  // @ViewChild('halfDoughnutCanvas') halfDoughnutCanvas;
   @ViewChild('lineCanvas') lineCanvas;
-  // @ViewChild('radarCanvas') radarCanvas;
-  // @ViewChild('pieCanvas') pieCanvas;
-  // @ViewChild('polarCanvas') polarCanvas;
-  // @ViewChild('bubbleCanvas') bubbleCanvas;
-  // @ViewChild('mixedCanvas') mixedCanvas;
-
   barChart: any;
   doughnutChart: any;
   halfDoughnutChart: any;
@@ -36,36 +28,70 @@ export class StatisticsPage {
   bubbleChart: any;
   mixedChart: any;
 
-  constructor(public navCtrl: NavController) { }
+  currentUserId: any = '';
+  routineTrainings = [];
+  routines = [];
+  data = [300, 0, 0];
+  dataLineChart = []
+
+  constructor(
+    public navCtrl: NavController,
+    public database: DatabaseProvider,
+    public userProvider: UserProvider,
+    public afAuth: AngularFireAuth,
+    public utilsProvider: UtilsProvider
+  ) {
+    this.currentUserId = this.userProvider.getCurrentUser();
+    firebase.firestore().collection("userTrainings")
+    .where("userId", "==", this.currentUserId.id)
+    .orderBy("routineId", "asc")
+    .get().then((documents) => {
+      documents.forEach((document) => {
+        this.routineTrainings.push({
+          id: document.id,
+          timeDiff: document.data().timeDiff,
+          timeStart: moment(document.data().timeStart).format('YYYY-MM-DD'),
+          userId: document.data().userId,
+          routineId: document.data().routineId,
+          routineName: document.data().routineName,
+          routineCategory: document.data().routineCategory
+        });
+
+        if (!this.routines.filter(r => r.id === document.data().routineId).length) {
+          this.routines.push({
+            id: document.data().routineId,
+            routineName: document.data().routineName
+          })
+        }
+      });
+    }).catch((error) => {
+      console.log('@error >>>> ', error)
+    });
+  }
 
   ngAfterViewInit() {
     setTimeout(() => {
       this.barChart = this.getBarChart();
-      // this.doughnutChart = this.getDoughnutChart();
-      // this.halfDoughnutChart = this.getHalfDoughnutChart();
     }, 150);
     setTimeout(() => {
       this.lineChart = this.getLineChart();
-      // this.radarChart = this.getRadarChart();
-      // this.polarAreaChart = this.getPolarAreaChart();
     }, 250);
     setTimeout(() => {
-      // this.bubbleChart = this.getBubbleChart();
-      // this.mixedChart = this.getMixedChart();
-      // this.pieChart = this.getPieChart();
-    }, 350);
 
+    }, 350);
   }
 
   updateData() {
-    // After instantiating your chart, its data is accessible and
-    // can be changed anytime with the function update().
-    // It takes care of everything and even redraws the animations :D
     this.pieChart.data.datasets[0].data = [Math.random() * 1000, Math.random() * 1000, Math.random() * 1000];
     this.pieChart.update();
   }
 
   getChart(context, chartType, data, options?) {
+    context.font = '20px';
+    context.fillStyle = 'black';
+    context.textAlign = "center";
+    context.textBaseline = "bottom";
+
     return new chartJs(context, {
       data,
       options,
@@ -73,187 +99,12 @@ export class StatisticsPage {
     });
   }
 
-  /*
-  *  By specifying different types inside each dataset
-  *  it's possible to have multiple bar types mixed into one.
-  */
-  // getMixedChart() {
-  //   const data = {
-  //     labels: ['Item 1', 'Item 2', 'Item 3'],
-  //     datasets: [
-  //       {
-  //         type: 'bar',
-  //         label: 'Bar Component',
-  //         data: [10, 20, 30],
-  //         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-  //       },
-  //       {
-  //         type: 'line',
-  //         label: 'Line Component',
-  //         data: [30, 20, 10],
-  //         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-  //       }
-  //     ]
-  //   };
-
-  //   return this.getChart(this.mixedCanvas.nativeElement, 'bar', data);
-
-  // }
-
-  // getPieChart() {
-  //   const data = {
-  //     labels: ['Red', 'Blue', 'Yellow'],
-  //     datasets: [
-  //       {
-  //         data: [300, 50, 100],
-  //         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-  //         hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-  //       }]
-  //   };
-
-  //   return this.getChart(this.pieCanvas.nativeElement, 'pie', data);
-
-  // }
-
-  // getPolarAreaChart() {
-  //   const data = {
-  //     datasets: [{
-  //       data: [11, 16, 7, 3, 14],
-  //       backgroundColor: ['#FF6384', '#4BC0C0', '#FFCE56', '#E7E9ED', '#36A2EB'],
-  //       label: 'My dataset' // for the legend
-  //     }],
-  //     labels: ['Red', 'Green', 'Yellow', 'Grey', 'Blue']
-  //   };
-
-  //   const options = {
-  //     elements: {
-  //       arc: {
-  //         borderColor: '#000000'
-  //       }
-  //     }
-  //   };
-
-  //   return this.getChart(this.polarCanvas.nativeElement, 'polarArea', data, options);
-  // }
-
-  // getBubbleChart() {
-  //   const data = {
-  //     datasets: [
-  //       {
-  //         label: 'First Dataset',
-  //         data: [
-  //           { x: 20, y: 30, r: 15 },
-  //           { x: 40, y: 10, r: 10 },
-  //         ],
-  //         backgroundColor: '#FF6384',
-  //         hoverBackgroundColor: '#FF6384',
-  //       }]
-  //   };
-
-  //   const options = {
-  //     elements: {
-  //       points: {
-  //         borderWidth: 1,
-  //         borderColor: 'rgb(0, 0, 0)'
-  //       }
-  //     }
-  //   };
-
-  //   return this.getChart(this.bubbleCanvas.nativeElement, 'bubble', data, options);
-  // }
-
-  // getRadarChart() {
-  //   const data = {
-  //     labels: ['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running'],
-  //     datasets: [
-  //       {
-  //         label: 'My First dataset',
-  //         backgroundColor: 'rgba(179,181,198,0.2)',
-  //         borderColor: 'rgba(179,181,198,1)',
-  //         pointBackgroundColor: 'rgba(179,181,198,1)',
-  //         pointBorderColor: '#fff',
-  //         pointHoverBackgroundColor: '#fff',
-  //         pointHoverBorderColor: 'rgba(179,181,198,1)',
-  //         data: [65, 59, 90, 81, 56, 55, 40]
-  //       },
-  //       {
-  //         label: 'My Second dataset',
-  //         backgroundColor: 'rgba(255,99,132,0.2)',
-  //         borderColor: 'rgba(255,99,132,1)',
-  //         pointBackgroundColor: 'rgba(255,99,132,1)',
-  //         pointBorderColor: '#fff',
-  //         pointHoverBackgroundColor: '#fff',
-  //         pointHoverBorderColor: 'rgba(255,99,132,1)',
-  //         data: [28, 48, 40, 19, 96, 27, 100]
-  //       }
-  //     ]
-  //   };
-
-  //   const options = {
-  //     scale: {
-  //       reverse: true,
-  //       ticks: {
-  //         beginAtZero: true
-  //       }
-  //     }
-  //   };
-
-  //   return this.getChart(this.radarCanvas.nativeElement, 'radar', data, options);
-  // }
-
-  // getDoughnutChart() {
-  //   const data = {
-  //     labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-  //     datasets: [{
-  //       label: '# of Votes',
-  //       data: [12, 19, 3, 5, 2, 3],
-  //       backgroundColor: [
-  //         'rgba(255, 99, 132, 0.2)',
-  //         'rgba(54, 162, 235, 0.2)',
-  //         'rgba(255, 206, 86, 0.2)',
-  //         'rgba(75, 192, 192, 0.2)',
-  //         'rgba(153, 102, 255, 0.2)',
-  //         'rgba(255, 159, 64, 0.2)'
-  //       ],
-  //       hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF6384', '#36A2EB', '#FFCE56']
-  //     }]
-  //   };
-
-  //   return this.getChart(this.doughnutCanvas.nativeElement, 'doughnut', data);
-  // }
-
-  // getHalfDoughnutChart() {
-  //   const data = {
-  //     labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-  //     datasets: [{
-  //       label: '# of Votes',
-  //       data: [12, 19, 3, 5, 2, 3],
-  //       backgroundColor: [
-  //         'rgba(255, 99, 132, 0.2)',
-  //         'rgba(54, 162, 235, 0.2)',
-  //         'rgba(255, 206, 86, 0.2)',
-  //         'rgba(75, 192, 192, 0.2)',
-  //         'rgba(153, 102, 255, 0.2)',
-  //         'rgba(255, 159, 64, 0.2)'
-  //       ],
-  //       hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF6384', '#36A2EB', '#FFCE56']
-  //     }]
-  //   };
-
-  //   const options = {
-  //     circumference: Math.PI,
-  //     rotation: 1.0 * Math.PI
-  //   };
-
-  //   return this.getChart(this.halfDoughnutCanvas.nativeElement, 'doughnut', data, options);
-  // }
-
   getBarChart() {
     const data = {
-      labels: ['Cuadrup...', 'Abdomen', 'Brazo', 'Pierna', 'Salto', 'Equilibrio'],
+      labels: ['Estandar', 'Demandado', 'Promedio'],
       datasets: [{
-        label: '# de entrenamientos acumulados',
-        data: [12, 19, 3, 5, 2, 3],
+        label: '',
+        data: this.data,
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',
@@ -275,12 +126,25 @@ export class StatisticsPage {
     };
 
     const options = {
+      maintainAspectRatio: false,
+      responsive: true,
       scales: {
         yAxes: [{
           ticks: {
             beginAtZero: true
           }
         }]
+      },
+      legend: {
+        display: false
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        formatter: Math.round,
+        font: {
+          weight: 'bold'
+        }
       }
     };
 
@@ -292,33 +156,33 @@ export class StatisticsPage {
       labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
       datasets: [
         {
-          label: 'Máximo avance alcanzado',
+          label: 'Tiempo de referencia',
           fill: false,
           lineTension: 0.1,
-          backgroundColor: 'rgba(75,192,192,0.4)',
-          borderColor: 'rgba(75,192,192,1)',
+          backgroundColor: 'rgba(31,4,4,1)',
+          borderColor: 'rgba(31,4,4,1)',
           borderCapStyle: 'butt',
           borderDash: [],
           borderDashOffset: 0.0,
+          borderWidth: 0.7,
           borderJoinStyle: 'miter',
-          pointBorderColor: 'rgba(75,192,192,1)',
+          pointBorderColor: 'rgba(31,4,4,0)',
           pointBackgroundColor: '#fff',
           pointBorderWidth: 1,
           pointHoverRadius: 5,
-          pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+          pointHoverBackgroundColor: 'rgba(31,4,4,0)',
           pointHoverBorderColor: 'rgba(220,220,220,1)',
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
-          data: [65, 59, 80, 81, 56, 55, 40],
+          data: [300, 300, 300, 300, 300, 300, 300],
           spanGaps: false,
-        },
-        {
-          label: 'Mínimo avance alcanzado',
+        },{
+          label: '',
           fill: false,
           lineTension: 0.1,
-          backgroundColor: 'rgba(175,92,192,0.4)',
-          borderColor: 'rgba(31,156,156,1)',
+          backgroundColor: 'rgba(237,53,53,1)',
+          borderColor: 'rgba(237,53,53,1)',
           borderCapStyle: 'butt',
           borderDash: [5, 8],
           borderDashOffset: 0.0,
@@ -332,50 +196,92 @@ export class StatisticsPage {
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
-          data: [15, 39, 50, 81, 51, 55, 30],
+          // data: [300, 339, 350, 50, 351, 255, 330],
+          data: [],
           spanGaps: false,
         }
       ]
     };
 
-    return this.getChart(this.lineCanvas.nativeElement, 'line', data);
+    const options = {
+      maintainAspectRatio: false,
+      responsive: true,
+      scales: {
+        yAxes: [{
+          ticks: {
+            gridLines: {
+              display: true,
+              color: 'rgba(219,219,219,0.3)',
+              zeroLineColor: 'rgba(219,219,219,0.3)',
+              drawBorder: false, // <---
+              lineWidth: 27,
+              zeroLineWidth: 1
+            },
+            ticks: {
+                beginAtZero: true,
+                display: true
+            }
+            // beginAtZero: true
+            // offset: true
+            // min: 900,
+            // max: 100,
+            // // stepSize: 1,
+            // suggestedMin: 950,
+            // suggestedMax: 50,
+            // scaleStartValue: 300
+          }
+        }],
+        // xAxes: [{
+        //   // offset: true,
+        //   // display: false
+        //   // scaleStartValue: 300
+        //   gridLines: {
+        //     display: false,
+        //   },
+        // }]
+      },
+      legend: {
+        display: false
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'top',
+        formatter: Math.round,
+        font: {
+          weight: 'bold'
+        }
+      }
+    };
+
+    return this.getChart(this.lineCanvas.nativeElement, 'line', data, options);
   }
 
+  onChange(event: any) {
+    // this.data[1] = (event.timeDiff < 0) ? event.timeDiff * -1 : event.timeDiff + 300;
+    this.data[1] = event.timeDiff;
+    let qtyRoutines = 0;
+    const avgTrainingRoutine = this.routineTrainings.reduce((sum, item) => {
+      if (item.routineId == event.routineId) {
+        const realValue = item.timeDiff;
+        ++qtyRoutines;
+        return sum + realValue;
+      }
+      return sum;
+    }, 0);
+    this.data[2] = Math.round(avgTrainingRoutine / qtyRoutines);
+    this.barChart.data.datasets[0].data = this.data;
+    this.barChart.update();
+  }
 
-  // public barChartOptions = {
-  //   scaleShowVerticalLines: false,
-  //   responsive: true
-  // };
-  // public barChartLabes = ['2007', '2008', '2009', '2010', '2011', '2012'];
-  // public barChartType = 'bar';
-  // public barChartLegend = 'true';
-
-  // public barChartData = [
-  //   {data: [65, 56, 45, 80, 81, 40, 41], label: 'series A'},
-  //   {data: [21, 34, 43, 45, 19, 45, 90], label: 'series B'},
-  //   {data: [31, 24, 61, 43, 12, 79, 90], label: 'series C'}
-  // ]
-
-  // public radarChartLabels = ['Q1', 'Q2', 'Q3', 'Q4'];
-  // public radarChartData = [
-  //   {data: [120, 130, 180, 70], label: '2017'},
-  //   {data: [90, 150, 200, 45], label: '2018'}
-  // ];
-  // public radarChartType = 'radar';
-  // //------//
-  // public doughnutChartLabels = ['Sales Q1', 'Sales Q2', 'Sales Q3', 'Sales Q4'];
-  // public doughnutChartData = [120, 150, 180, 90];
-  // public doughnutChartType = 'doughnut';
-  // //-------//
-  // public pieChartLabels = ['Sales Q1', 'Sales Q2', 'Sales Q3', 'Sales Q4'];
-  // public pieChartData = [120, 150, 180, 90];
-  // public pieChartType = 'pie';
-
-  // constructor(public navCtrl: NavController, public navParams: NavParams) {
-  // }
-
-  // ionViewDidLoad() {
-  //   console.log('ionViewDidLoad StatisticsPage');
-  // }
+  onChangeRoutine(event: any) {
+    this.dataLineChart = [];
+    this.routineTrainings.filter((training) => {
+      if (training.routineId === event.id) {
+        this.dataLineChart.push(training.timeDiff);
+      }
+    });
+    this.lineChart.data.datasets[1].data = this.dataLineChart;
+    this.lineChart.update();
+  }
 
 }

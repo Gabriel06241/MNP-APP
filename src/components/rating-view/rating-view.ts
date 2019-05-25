@@ -42,7 +42,6 @@ export class RatingViewComponent {
         this.count = this.spotData.rating.count;
       }
     });
-    
   }
 
   onModelChange(event) {
@@ -62,7 +61,6 @@ export class RatingViewComponent {
         "raters": this.spotData.raters
       }
     ).then(() => {
-      console.log('Updated!')
       this.utilsProvider.showToast(`Su calificacion ${this.rating}, fue asignada correctamente!`);
       this.viewCtrl.dismiss();
     }).catch((error) => {

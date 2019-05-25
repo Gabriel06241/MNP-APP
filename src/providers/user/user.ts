@@ -2,20 +2,12 @@ import { AngularFireDatabase } from "angularfire2/database";
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-/*
-  Generated class for the UserProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class UserProvider {
 
   public currentUser: Observable<any>;
 
-  constructor(public afBD: AngularFireDatabase) {
-    console.log('Hello UserProvider Provider');
-  }
+  constructor(public afBD: AngularFireDatabase) { }
 
   public getUsers() {
     return this.afBD.list('/users');
@@ -34,20 +26,20 @@ export class UserProvider {
 
   public getUserFromFieldValue(field, value) {
     return this.afBD.list('users', (records) =>
-      records.orderByChild(field).equalTo(value))
-      .query.once('value')
-      .then(snapshot => snapshot.val())
-      .then((response) => {
-        let records = [];
-        if (response) {
-          let keys = Object.keys(response);
-          keys.forEach(element => {
-            response[element].key = element;
-            records.push(response[element])
-          });
-        }
-        return records;
-      })
+    records.orderByChild(field).equalTo(value))
+    .query.once('value')
+    .then(snapshot => snapshot.val())
+    .then((response) => {
+      let records = [];
+      if (response) {
+        let keys = Object.keys(response);
+        keys.forEach(element => {
+          response[element].key = element;
+          records.push(response[element])
+        });
+      }
+      return records;
+    })
   }
 
   public createOrUpdateUser(user) {

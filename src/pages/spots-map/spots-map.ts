@@ -6,13 +6,6 @@ import { GoogleMaps } from "@ionic-native/google-maps";
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import * as firebase from 'Firebase';
 
-/**
- * Generated class for the SpotsMapPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 declare var google: any;
 
 @IonicPage()
@@ -39,13 +32,12 @@ export class SpotsMapPage {
   ) {
     this.getPosition();
     this.http.get('assets/data/locations.json').map(res => res.json())
-      .subscribe(data => {
-        this.spotsList = data.spots;
-      },
-        err => console.log("error is " + err), // error
-        () => console.log('read company data Complete ' + this.spotsList) // complete
-      );
-    console.log(JSON.stringify(this.spotsList, null, 2), '###""!!!');
+    .subscribe(data => {
+      this.spotsList = data.spots;
+    },
+      err => console.log("error is " + err), // error
+      () => console.log('read company data Complete ' + this.spotsList) // complete
+    );
   }
 
   ionViewDidLoad() {

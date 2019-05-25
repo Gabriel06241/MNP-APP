@@ -5,13 +5,6 @@ import { LoginPage } from '../login/login';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { UtilsProvider } from '../../providers/utils/utils';
 
-/**
- * Generated class for the UserPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-user',
@@ -32,13 +25,7 @@ export class UserPage {
     public toastCtrl: ToastController,
     public utilsProvider: UtilsProvider,
     public userProvider: UserProvider
-  ) {
-
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad UserPage');
-  }
+  ) { }
 
   async saveUser(user) {
     if (this.utilsProvider.validateDataUser(user)) {
@@ -49,18 +36,15 @@ export class UserPage {
     if (!user.id) {
       await this.userProvider.getUserFromFieldValue('email', user.email)
       .then((response) => {
-        console.log('console @response -> ', response);
         if (response.length) {
           return this.utilsProvider.showAlert("Alerta de error", "El correo " + user.email + " ya se encuentra registrado!");
         }
       });
 
       try {
-        console.log('try');
         const result = await this.afAuth.auth.createUserWithEmailAndPassword(user.email, this.utilsProvider.getHashMd5(user.password));
         if (result) {
           this.afAuth.auth.onAuthStateChanged((currentUser) => {
-            console.log('@currentUser ====>>>> ', currentUser);
             currentUser.updateProfile({
               displayName: user.fullName,
               photoURL: 'assets/imgs/user.svg'

@@ -22,15 +22,10 @@ export class CommentsPage {
     .orderBy("created", "asc")
     .get()
       .then((data) => {
-        console.log('data >>> ', data);
         this.comments = data.docs;
       }).catch((error) => {
         console.log(error)
       })
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad CommentsPage');
   }
 
   close() {

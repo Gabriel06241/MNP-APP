@@ -1,25 +1,30 @@
 import { Injectable } from '@angular/core';
-import { ToastController, LoadingController, AlertController } from 'ionic-angular';
+import { ToastController, LoadingController, AlertController, Platform } from 'ionic-angular';
 import { Md5 } from 'ts-md5/dist/md5';
 import { Network } from '@ionic-native/network';
+import { NativeAudio } from '@ionic-native/native-audio';
 
-/*
-  Generated class for the UtilsProvider provider.
+interface Sound {
+  key: string;
+  asset: string;
+  isNative: boolean
+}
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class UtilsProvider {
+
+  private sounds: Sound[] = [];
+  private audioPlayer: HTMLAudioElement = new Audio();
+  private forceWebAudio: boolean = true;
 
   constructor(
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     public alertCtrl: AlertController,
-    private network: Network
-  ) {
-    console.log('Hello UtilsProvider Provider');
-  }
+    private network: Network,
+    private platform: Platform,
+    private nativeAudio: NativeAudio
+  ) { }
 
   public showLoading(msg) {
     this.loadingCtrl.create({
@@ -97,12 +102,46 @@ export class UtilsProvider {
     states[this.network.Connection.CELL] = 'Cell generic connection';
     states[this.network.Connection.NONE] = 'No network connection';
 
-    console.log('checking internet connection... ', networkState)
-
     if (states[networkState] == 'No network connection') {
       return false;
     }
     return true;
+  }
+
+
+  preload(key: string, asset: string): void {
+    if(this.platform.is('cordova') && !this.forceWebAudio){
+      this.nativeAudio.preloadSimple(key, asset);
+      this.sounds.push({
+        key: key,
+        asset: asset,
+        isNative: true
+      });
+    } else {
+      let audio = new Audio();
+      audio.src = asset;
+      this.sounds.push({
+        key: key,
+        asset: asset,
+        isNative: false
+      });
+    }
+  }
+
+  play(key: string): void {
+    let soundToPlay = this.sounds.find((sound) => {
+      return sound.key === key;
+    });
+    if(soundToPlay.isNative){
+      this.nativeAudio.play(soundToPlay.asset).then((res) => {
+        console.log(res);
+      }, (err) => {
+        console.log(err);
+      });
+    } else {
+      this.audioPlayer.src = soundToPlay.asset;
+      this.audioPlayer.play();
+    }
   }
 
 }

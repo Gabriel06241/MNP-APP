@@ -59,17 +59,16 @@ export class MyApp {
       { title: 'Acerca de', component: AboutPage, icon: 'md-information-circle', perfil: 'admin' },
       { title: 'Cerrar Sesión', component: AboutPage, icon: 'md-power', perfil: 'admin' }
     ];
-    // console.log('console @userProvider -> ', userProvider.getCurrentUser());
-    console.log('User log settings.. ', this.userProvider.getCurrentUser())
-    this.afAuth.auth.onAuthStateChanged((currentUser) => {
-      console.log('On Constructor - currentUser >>>> ', currentUser)
-      this.profilePicture = currentUser.photoURL;
-    });
+    // ADVERTENCIA
+    // console.log('User log settings.. ', this.userProvider.getCurrentUser())
+    // this.afAuth.auth.onAuthStateChanged((currentUser) => {
+    //   console.log('On Constructor - currentUser >>>> ', currentUser)
+    //   this.profilePicture = currentUser.photoURL;
+    // });
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // this.checkConnection();
       this.statusBar.styleDefault();
       this.statusBar.overlaysWebView(false);
     });
@@ -180,11 +179,8 @@ export class MyApp {
   }
 
   changeTheme(theme) {
-    console.log('Setting theming #1 ...');
     this.global.set('theme', theme);
   }
-
-
 
   takePicture() {
     const loading = this.loadingCtrl.create();

@@ -1,12 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-
-/**
- * Generated class for the TimerProgressComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
+import moment from 'moment';
 
 export interface CountdownTimer {
   seconds: number;
@@ -30,12 +24,10 @@ export class TimerProgress {
   private percent;
   private fixTransform;
   currentExerciseNumber = 1;
+  dateTimeStart: any = 0;
+  dateTimeEnd: any = 0;
 
-  constructor(
-    private sanitizer: DomSanitizer,
-  ) {
-
-  }
+  constructor(private sanitizer: DomSanitizer) { }
 
   ngOnInit() {
     this.timeInSeconds = 300;
@@ -55,6 +47,7 @@ export class TimerProgress {
   }
 
   initTimer() {
+    this.dateTimeStart = moment();
     this.initProgressBar();
     if (!this.timeInSeconds) { this.timeInSeconds = 0; }
 
@@ -85,8 +78,6 @@ export class TimerProgress {
   }
 
   timerTick() {
-    console.log(' >>>>> ', this.timer.secondsRemaining)
-
     switch (this.timer.secondsRemaining) {
       case 60:
         this.currentExerciseNumber = 2;
@@ -107,16 +98,17 @@ export class TimerProgress {
       // this.timer.secondsRemaining--;
       this.timer.secondsRemaining++;
       this.timer.displayTime = this.getSecondsAsDigitalClock(this.timer.secondsRemaining);
-      this.percent = this.timer.secondsRemaining / this.timer.seconds * 100;
-      this.increment = 180 / 100;
-      const progress = 'rotate(' + this.increment * this.percent + 'deg)';
-      this.transform = this.sanitizer.bypassSecurityTrustStyle(progress);
-      this.fixTransform = this.sanitizer.bypassSecurityTrustStyle(progress);
-      // if (this.timer.secondsRemaining > 0) {
       if (this.timer.secondsRemaining < this.timeInSeconds) {
+        this.percent = this.timer.secondsRemaining / this.timer.seconds * 100;
+        this.increment = 180 / 100;
+        const progress = 'rotate(' + this.increment * this.percent + 'deg)';
+        this.transform = this.sanitizer.bypassSecurityTrustStyle(progress);
+        this.fixTransform = this.sanitizer.bypassSecurityTrustStyle(progress);
+        // if (this.timer.secondsRemaining > 0) {
+      // if (this.timer.secondsRemaining < this.timeInSeconds) {
         this.timerTick();
       } else {
-        console.log('Real finished progress...', new Date());
+        this.timerTick();
         this.timer.hasFinished = true;
       }
     }, 1000);

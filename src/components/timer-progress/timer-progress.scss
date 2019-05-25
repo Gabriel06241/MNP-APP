@@ -9,11 +9,13 @@
   $percentage-color: tomato;
   $percentage-font-size: 22px;
   // margin: 10px;
-  margin-left: 60px;
+  // margin-left: 60px;
   width: $circle-size;
   height: $circle-size;
   background-color: $circle-background;
   border-radius: 50%;
+  align-content: center;
+  margin: auto;
   .circle {
     .fill,
     .mask,
@@ -63,4 +65,11 @@
       font-size: $percentage-font-size;
     }
   }
+}
+
+.circulo {
+  background-image: url('../assets/imgs/circulo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }

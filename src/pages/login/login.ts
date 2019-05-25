@@ -33,13 +33,11 @@ export class LoginPage {
     private network: Network
   ) {
     this.connected = this.network.onConnect().subscribe(data => {
-      console.log(' >>>>>>>> connected', data);
       this.flag = true;
       // this.displayNetworkUpdate(data.type);
     }, error => console.error(error));
 
     this.disconnected = this.network.onDisconnect().subscribe(data => {
-      console.log(' >>>>>>>> disconnected', data);
       this.flag = false;
       // this.displayNetworkUpdate(data.type);
     }, error => console.error(error));
@@ -71,7 +69,6 @@ export class LoginPage {
       try {
         await this.userProvider.getUserFromFieldValue('email', user.email)
           .then((response) => {
-            console.log('response[0] >>>> ', response[0]);
             this.userProvider.setCurrentUser(response[0]);
             if (response.length) {
               user.exist = true;
@@ -127,7 +124,6 @@ export class LoginPage {
           handler: data => {
             // this.utilsProvider.checkConnection();
             this.sendResetEmail(data.email).then((response) => {
-              console.log('@response => ', JSON.stringify(response));
               let toastMsg = this.toastCtrl.create({
                 message: 'Correo enviado exitosamente!',
                 duration: 3000,

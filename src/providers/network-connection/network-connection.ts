@@ -19,13 +19,10 @@ export class NetworkConnectionProvider {
     private toastCtrl: ToastController,
     private eventCtrl: Events
   ) {
-    console.log('Hello NetworkConnectionProvider Provider');
-
     this.platform.ready().then(() => {
       this.previousStatus = ConnectionStatusEnum.Online;
       this.initializeNetworkEvents();
     });
-
   }
 
   public initializeNetworkEvents(): void {
@@ -44,7 +41,6 @@ export class NetworkConnectionProvider {
       this.previousStatus = ConnectionStatusEnum.Online;
       this.isOnline = true;
     })
-
   }
 
 }

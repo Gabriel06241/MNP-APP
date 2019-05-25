@@ -34,11 +34,8 @@ export class SettingsPage {
     public afAuth: AngularFireAuth,
     private loadingCtrl: LoadingController
   ) {
-    console.log('User log settings.. ', this.userProvider.getCurrentUser())
     this.afAuth.auth.onAuthStateChanged((currentUser) => {
-      console.log('On Constructor - currentUser >>>> ', currentUser)
       this.user.name = currentUser.displayName;
-      // this.user.name = (this.userProvider.getCurrentUser().fullName) ? this.userProvider.getCurrentUser().fullName : 'Default User';
       this.user.imageUrl = currentUser.photoURL;
     });
   }

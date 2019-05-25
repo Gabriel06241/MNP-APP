@@ -42,7 +42,6 @@ export class SpotsPage {
     this.getSpots();
 
     events.subscribe('star-rating:changed', (starRating) => {
-      console.log(starRating);
       this.rating = starRating;
     });
 
@@ -108,68 +107,52 @@ export class SpotsPage {
   }
 
   getSpots() {
-    console.log('console getSpots() <<<<')
     this.spots = [];
-
     let loading = this.loadingCtrl.create({
       content: 'Cargando spots...'
     })
-    console.log('passed...')
-
     loading.present();
-
-    let query = firebase.firestore().collection("spots").orderBy("created", "desc")
-      .limit(this.pageSize);
-      query.onSnapshot((snapshot) => {
-        console.log('spot have changed...')
-        let changesDocs = snapshot.docChanges();
-        changesDocs.forEach((change) => {
-          if (change.type == 'added') {
-            console.log('document added');
-          }
-          if (change.type == 'modified') {
-            console.log(`El spot ${change.doc.data().name} has been modified`);
-          }
-          if (change.type == 'removed') {
-            console.log('document removed');
-          }
-        })
-      });
-
-      query.get()
-      .then((documents) => {
-        documents.forEach((document) => {
-
-          // firebase
-          // .firestore()
-          // .collection("spots").doc(document.id).set(document.data())
-          // .then((create) => {
-          //   console.log('@create new >>>  ', create)
-          // }).catch((error) => {
-          //   console.log('@error new >>>  ', error)
-          // })
-
-          this.spots.push({
-            spotId: document.id,
-            avatarImageUrl: 'assets/imgs/user.svg',
-            postImageUrl: document.data().photoUrl,
-            name: document.data().name,
-            postText: document.data().description,
-            date: moment.unix(document.data().created.seconds).locale('es').format("DD MMMM YYYY hh:mm A"),
-            rating: document.data().rating,
-            raters: document.data().raters,
-            readOnly: false,
-            commentsCount: document.data().commentsCount || 0,
-            color: "red",
-            timestamp: this.getTimeAgo(moment.unix(document.data().created.seconds))
-          })
-          this.cursor = this.spots[this.spots.length - 1];
-        })
-        loading.dismiss();
+    let query = firebase.firestore().collection("spots").orderBy("created", "desc").limit(this.pageSize);
+    query.onSnapshot((snapshot) => {
+      console.log('spot have changed...')
+      let changesDocs = snapshot.docChanges();
+      changesDocs.forEach((change) => {
+        if (change.type == 'added') {
+          console.log('document added');
+        }
+        if (change.type == 'modified') {
+          console.log(`El spot ${change.doc.data().name} has been modified`);
+        }
+        if (change.type == 'removed') {
+          console.log('document removed');
+        }
       })
-      .catch((error) => {
-        console.log('error @getSpots', error);
+    });
+
+    query.get()
+    .then((documents) => {
+      documents.forEach((document) => {
+        this.spots.push({
+          spotId: document.id,
+          avatarImageUrl: 'assets/imgs/user.svg',
+          postImageUrl: document.data().photoUrl,
+          name: document.data().name,
+          postText: document.data().description,
+          date: moment.unix(document.data().created.seconds).locale('es').format("DD MMMM YYYY hh:mm A"),
+          rating: document.data().rating,
+          raters: document.data().raters,
+          readOnly: false,
+          commentsCount: document.data().commentsCount || 0,
+          color: "red",
+          timestamp: this.getTimeAgo(moment.unix(document.data().created.seconds))
+        })
+        this.cursor = this.spots[this.spots.length - 1];
       })
+      loading.dismiss();
+    })
+    .catch((error) => {
+      console.log('error @getSpots', error);
+    })
   }
 
   loadMoreData(event) {
@@ -177,17 +160,6 @@ export class SpotsPage {
       .startAfter(this.cursor).limit(this.pageSize).get()
       .then((documents) => {
         documents.forEach((document) => {
-          console.log('console getSpots() >>>>> ', document);
-
-          // firebase
-          // .firestore()
-          // .collection("spots").doc(document.id).set(document.data())
-          // .then((create) => {
-          //   console.log('@create new #2 >>>  ', create)
-          // }).catch((error) => {
-          //   console.log('@error new #2 >>>  ', error)
-          // })
-
           this.spots.push({
             spotId: document.id,
             avatarImageUrl: 'assets/imgs/user.svg',
@@ -195,7 +167,6 @@ export class SpotsPage {
             name: document.data().name,
             postText: document.data().description,
             date: moment.unix(document.data().created.seconds).locale('es').format("DD MMMM YYYY hh:mm A"),
-            // date: moment.unix(document.data().created.seconds).locale('es').format("DD MMMM YYYY hh:mm:ss A"),
             rating: 2,
             readOnly: false,
             color: "red",
@@ -209,8 +180,6 @@ export class SpotsPage {
             event.complete();
             this.cursor = this.spots[this.spots.length - 1];
           }
-
-          console.log('data: ', document.data())
         })
       })
       .catch((error) => {
@@ -229,13 +198,11 @@ export class SpotsPage {
   }
 
   comment(spot) {
-    console.log('spot >>> ', spot)
     this.actionCtrl.create({
       buttons: [
         {
           text: "Ver todos los comentarios",
           handler: () => {
-            console.log('Spot >>> ', spot);
             this.modalCtrl.create(CommentsPage, {
               "spot": spot
             }).present();
@@ -268,7 +235,6 @@ export class SpotsPage {
                         owner_name:firebase.auth().currentUser.displayName,
                         created: firebase.firestore.FieldValue.serverTimestamp()
                       }).then((doc) => {
-                        // this.utilsProvider.showToast('Comentario guardado correctamente!')
                         this.toastCtrl.create({
                           message: 'Comentario guardado correctamene!',
                           duration: 3000
