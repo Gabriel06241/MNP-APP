@@ -1,16 +1,14 @@
 import { Component, ViewChild  } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
-
-import chartJs from 'chart.js';
-import { DatabaseProvider } from '../../providers/database/database';
-import { UserProvider } from '../../providers/user/user';
-import firebase from 'firebase';
-import { AngularFireAuth } from 'angularfire2/auth';
+import { ModalController } from 'ionic-angular';
 
 import moment from 'moment';
-import { UtilsProvider } from '../../providers/utils/utils';
+import chartJs from 'chart.js';
+import firebase from 'firebase';
 
-@IonicPage()
+import { UserProvider } from '../../providers/user/user';
+import { StatisticsDescriptionPage } from "./../statistics-description/statistics-description";
+import { HistoryTablePage } from '../history-table/history-table';
+
 @Component({
   selector: 'page-statistics',
   templateUrl: 'statistics.html',
@@ -19,14 +17,7 @@ export class StatisticsPage {
   @ViewChild('barCanvas') barCanvas;
   @ViewChild('lineCanvas') lineCanvas;
   barChart: any;
-  doughnutChart: any;
-  halfDoughnutChart: any;
   lineChart: any;
-  radarChart: any;
-  polarAreaChart: any;
-  pieChart: any;
-  bubbleChart: any;
-  mixedChart: any;
 
   currentUserId: any = '';
   routineTrainings = [];
@@ -35,11 +26,8 @@ export class StatisticsPage {
   dataLineChart = []
 
   constructor(
-    public navCtrl: NavController,
-    public database: DatabaseProvider,
     public userProvider: UserProvider,
-    public afAuth: AngularFireAuth,
-    public utilsProvider: UtilsProvider
+    public modalCtrl: ModalController,
   ) {
     this.currentUserId = this.userProvider.getCurrentUser();
     firebase.firestore().collection("userTrainings")
@@ -56,7 +44,6 @@ export class StatisticsPage {
           routineName: document.data().routineName,
           routineCategory: document.data().routineCategory
         });
-
         if (!this.routines.filter(r => r.id === document.data().routineId).length) {
           this.routines.push({
             id: document.data().routineId,
@@ -81,17 +68,11 @@ export class StatisticsPage {
     }, 350);
   }
 
-  updateData() {
-    this.pieChart.data.datasets[0].data = [Math.random() * 1000, Math.random() * 1000, Math.random() * 1000];
-    this.pieChart.update();
-  }
-
   getChart(context, chartType, data, options?) {
     context.font = '20px';
     context.fillStyle = 'black';
     context.textAlign = "center";
     context.textBaseline = "bottom";
-
     return new chartJs(context, {
       data,
       options,
@@ -101,7 +82,7 @@ export class StatisticsPage {
 
   getBarChart() {
     const data = {
-      labels: ['Estandar', 'Demandado', 'Promedio'],
+      labels: ['Estandar', 'Usado', 'Promedio'],
       datasets: [{
         label: '',
         data: this.data,
@@ -147,13 +128,12 @@ export class StatisticsPage {
         }
       }
     };
-
     return this.getChart(this.barCanvas.nativeElement, 'bar', data, options);
   }
 
   getLineChart() {
     const data = {
-      labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
+      labels: ['', '', '', '', '', '', ''],
       datasets: [
         {
           label: 'Tiempo de referencia',
@@ -196,7 +176,6 @@ export class StatisticsPage {
           pointHoverBorderWidth: 2,
           pointRadius: 1,
           pointHitRadius: 10,
-          // data: [300, 339, 350, 50, 351, 255, 330],
           data: [],
           spanGaps: false,
         }
@@ -213,32 +192,16 @@ export class StatisticsPage {
               display: true,
               color: 'rgba(219,219,219,0.3)',
               zeroLineColor: 'rgba(219,219,219,0.3)',
-              drawBorder: false, // <---
+              drawBorder: false,
               lineWidth: 27,
               zeroLineWidth: 1
             },
             ticks: {
-                beginAtZero: true,
-                display: true
+              beginAtZero: true,
+              display: true
             }
-            // beginAtZero: true
-            // offset: true
-            // min: 900,
-            // max: 100,
-            // // stepSize: 1,
-            // suggestedMin: 950,
-            // suggestedMax: 50,
-            // scaleStartValue: 300
           }
-        }],
-        // xAxes: [{
-        //   // offset: true,
-        //   // display: false
-        //   // scaleStartValue: 300
-        //   gridLines: {
-        //     display: false,
-        //   },
-        // }]
+        }]
       },
       legend: {
         display: false
@@ -252,12 +215,10 @@ export class StatisticsPage {
         }
       }
     };
-
     return this.getChart(this.lineCanvas.nativeElement, 'line', data, options);
   }
 
-  onChange(event: any) {
-    // this.data[1] = (event.timeDiff < 0) ? event.timeDiff * -1 : event.timeDiff + 300;
+  onChangeTraining(event: any) {
     this.data[1] = event.timeDiff;
     let qtyRoutines = 0;
     const avgTrainingRoutine = this.routineTrainings.reduce((sum, item) => {
@@ -275,6 +236,7 @@ export class StatisticsPage {
 
   onChangeRoutine(event: any) {
     this.dataLineChart = [];
+    let labelsAxisX = [];
     this.routineTrainings.filter((training) => {
       if (training.routineId === event.id) {
         this.dataLineChart.push(training.timeDiff);
@@ -282,6 +244,20 @@ export class StatisticsPage {
     });
     this.lineChart.data.datasets[1].data = this.dataLineChart;
     this.lineChart.update();
+  }
+
+  viewHistoryTrainings() {
+    console.log('>> viewHistoryTrainings <<')
+    this.modalCtrl.create(HistoryTablePage, {
+      "trainings": this.routineTrainings
+    }).present();
+  }
+
+  viewStatisticsDetail() {
+    console.log('>> viewStatisticsDetail <<')
+    this.modalCtrl.create(StatisticsDescriptionPage, {
+      "trainings": this.routineTrainings
+    }).present();
   }
 
 }

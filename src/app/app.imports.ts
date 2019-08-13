@@ -30,6 +30,8 @@ import { CommentsPage } from './../pages/comments/comments';
 import { ExerciseDetailPage } from './../pages/exercise-detail/exercise-detail';
 import { SlidePreheatingPage } from './../pages/slide-preheating/slide-preheating';
 import { HydratePage } from '../pages/hydrate/hydrate';
+import { HistoryTablePage } from '../pages/history-table/history-table';
+import { StatisticsDescriptionPage } from '../pages/statistics-description/statistics-description';
 
 // Components
 import { CategoryComponent } from './../components/category/category';
@@ -89,7 +91,9 @@ export const PAGES = [
   RatingViewComponent,
   CommentsPage,
   ExerciseDetailPage,
-  HydratePage
+  HydratePage,
+  HistoryTablePage,
+  StatisticsDescriptionPage
 ]
 
 export const MODULES = [

@@ -3,29 +3,26 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Estadisticas</ion-title>
-    <ion-buttons end>
-      <button ion-button>
-        <ion-icon name="md-pie"></ion-icon>
+    <ion-row>
+      <ion-title>Estadísticas</ion-title>
+      <button ion-button style="padding-right: 5px;" (click)="viewHistoryTrainings()">
+        Historial
       </button>
-      <button ion-button>
-        <ion-icon name="md-more"></ion-icon>
-      </button>
-    </ion-buttons>
+    </ion-row>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
   <ion-card>
     <ion-card-header text-center>
-      Tiempo estándar vs demandado
-      <ion-list>
-        <ion-item>
-          <ion-label>Rutinas completadas</ion-label>
-          <!-- <ion-select [(ngModel)]="routineTrainings" interface="popover" ionChange="onChange('data')"> -->
-          <!-- value="training.id" -->
-          <ion-select name="test" interface="popover" (ionChange)="onChange($event)">
-            <ion-option *ngFor="let training of routineTrainings" [value]="training">{{training.routineName}} {{training.timeStart}}</ion-option>
+      Tiempo estándar vs Tiempo que usaste
+      <p>(Tiempo en segundos)</p>
+      <p class="fixline" (click)="viewStatisticsDetail()">Instrucciones</p>
+      <ion-list text-wrap>
+        <ion-item text-wrap>
+          <ion-label>Rutinas</ion-label>
+          <ion-select name="test" (ionChange)="onChangeTraining($event)" text-wrap>
+            <ion-option *ngFor="let training of routineTrainings" [value]="training" text-wrap>{{training.routineName}} {{training.timeStart}}</ion-option>
           </ion-select>
         </ion-item>
       </ion-list>
@@ -36,17 +33,14 @@
   </ion-card>
   <ion-card>
     <ion-card-header text-center>
-      Evolucion de entrenamiento
-      <ion-list>
-        <ion-item>
+      Evolución de entrenamiento
+      <p>(Tiempo en segundos)</p>
+      <p class="fixline" (click)="viewStatisticsDetail()">Instrucciones</p>
+      <ion-list text-wrap>
+        <ion-item text-wrap>
           <ion-label>Rutinas</ion-label>
-          <!-- <ion-select [(ngModel)]="routineTrainings" interface="popover" ionChange="onChange('data')"> -->
-          <!-- value="training.id" -->
-          <ion-select name="test" interface="popover" (ionChange)="onChangeRoutine($event)">
-            <ion-option *ngFor="let routine of routines" [value]="routine">{{routine.routineName}}</ion-option>
-            <!-- <ion-option value="1">Rutina 1</ion-option>
-            <ion-option value="2">Rutina 2</ion-option>
-            <ion-option value="3">Rutina 3</ion-option> -->
+          <ion-select name="test" interface="popover" (ionChange)="onChangeRoutine($event)" text-wrap>
+            <ion-option text-wrap *ngFor="let routine of routines" [value]="routine">{{routine.routineName}}</ion-option>
           </ion-select>
         </ion-item>
       </ion-list>

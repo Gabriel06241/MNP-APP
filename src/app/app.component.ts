@@ -59,12 +59,6 @@ export class MyApp {
       { title: 'Acerca de', component: AboutPage, icon: 'md-information-circle', perfil: 'admin' },
       { title: 'Cerrar Sesión', component: AboutPage, icon: 'md-power', perfil: 'admin' }
     ];
-    // ADVERTENCIA
-    // console.log('User log settings.. ', this.userProvider.getCurrentUser())
-    // this.afAuth.auth.onAuthStateChanged((currentUser) => {
-    //   console.log('On Constructor - currentUser >>>> ', currentUser)
-    //   this.profilePicture = currentUser.photoURL;
-    // });
   }
 
   initializeApp() {
@@ -116,7 +110,6 @@ export class MyApp {
           text: 'Seleccionar imagen',
           icon: !this.platform.is('ios') ? 'image' : null,
           handler: () => {
-            // this.openImagePicker();
             this.getPicture();
           }
         },

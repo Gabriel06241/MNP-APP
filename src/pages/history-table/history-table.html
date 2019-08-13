@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Historial de entrenamientos</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only clear (click)="close()">
+          <ion-icon name="close"></ion-icon>
+        </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-item-group>
+      <ion-item *ngFor="let training of trainings;">
+        <h2>{{training.timeStart}}</h2>
+        <p>Rutina: {{training.routineName}}</p>
+        <p>Categoría: {{training.routineCategory}}</p>
+        <p>Tiempo: {{training.timeDiff}} (En segundos)</p>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content>

@@ -321,7 +321,6 @@ ion-navbar.no-border {
     display: flex;
     align-items: center;
     justify-content: center;
-    //background: rgba(50, 10, 92, .4);
     .login-content {
       width: 86%;
       .logo {
@@ -533,17 +532,10 @@ ion-icon[ng-reflect-disabled="true"] {
   animation-name: fadeInDown;
 }
 
-// **** Ionic Simple Hacks **** //
-// Remove or Hide the scroll bar from ionic page
 * ::-webkit-scrollbar {
   display: none;
 }
 
-// Enable select text from ionic page
-// body {
-//   -webkit-user-select: text;
-//   user-select: text;
-// }
 .rating_alert {
   border-radius: 8px;
   .alert-wrapper {
@@ -554,7 +546,6 @@ ion-icon[ng-reflect-disabled="true"] {
     margin-top: 10px;
     flex-direction: row;
     justify-content: space-around;
-    // flex-direction: row; justify-content: space-around;
     display: flex;
     flex-wrap: wrap;
   }
@@ -623,8 +614,6 @@ ion-icon[ng-reflect-disabled="true"] {
 .backgroundTest {
   background-color: white;
   background: url("../assets/imgs/hydrate.png") no-repeat;
-  // background: url("assets/imgs/bg.jpg") no-repeat;
-  // background-size: cover;
   background-size: 100% 100%;
   top: 0;
   left: 0;

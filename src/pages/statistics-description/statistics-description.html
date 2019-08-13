@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>Interpetación estadística</ion-title>
+    <!-- <ion-title>Historial de entrenamientos</ion-title> -->
+    <ion-buttons end>
+      <button ion-button icon-only clear (click)="close()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+
+  <ion-card>
+    <ion-card-content>
+      <img [src]="base64Image" *ngIf="base64Image" />
+      <br>
+      <p>
+        Esta grafica permite ver el proceso llevado a cabo en cada entrenamiento permitiendo al usuario comparar el tiempo invertido vs el tiempo base definido para la realización de las rutinas. Teniendo esto como punto de partida se cuenta con un gráfico de
+        barras con tres columnas que se definen de la siguiente manera:
+      </p>
+      <br>
+      <b>Estandar:</b>
+      <p>Es el tiempo fijo proyectado para la realización de las rutinas. Esto no quiere decir que sea un tiempo de obligatorio cumplimiento puesto que del tiempo de realización de las rutinas dependerá de cada usuario.</p>
+      <br>
+      <b>Usado:</b>
+      <p>Es el tiempo fijo proyectado para la realización de las rutinas. Esto no quiere decir que sea un tiempo de obligatorio cumplimiento puesto que del tiempo de realización de las rutinas dependerá de cada usuario.</p>
+      <br>
+      <b>Promedio:</b>
+      <p>Es el tiempo fijo proyectado para la realización de las rutinas. Esto no quiere decir que sea un tiempo de obligatorio cumplimiento puesto que del tiempo de realización de las rutinas dependerá de cada usuario.</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- <ion-list>
+    <ion-item-group>
+      <ion-item *ngFor="let training of trainings;">
+        <h2>{{training.timeStart}}</h2>
+        <p>Rutina: {{training.routineName}}</p>
+        <p>Categoría: {{training.routineCategory}}</p>
+        <p>Tiempo: {{training.timeDiff}} (En segundos)</p>
+      </ion-item>
+    </ion-item-group>
+  </ion-list> -->
+</ion-content>

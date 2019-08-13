@@ -1,4 +1,3 @@
-// import { Firebase } from '@ionic-native/firebase'
 import { RatingViewComponent } from './../../components/rating-view/rating-view';
 import { Component } from '@angular/core';
 import { PopoverController, IonicPage, AlertController, NavController, ActionSheetController, ToastController, LoadingController, ModalController } from 'ionic-angular';
@@ -22,7 +21,6 @@ export class SpotsPage {
   pageSize: number = 10;
   cursor: any;
   infiniteEvent: any;
-
   rating: number = 1.2;
   popover: any;
 
@@ -36,7 +34,6 @@ export class SpotsPage {
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     public modalCtrl: ModalController,
-    // private firebaseCordova: Firebase
   ) {
 
     this.getSpots();
@@ -44,15 +41,6 @@ export class SpotsPage {
     events.subscribe('star-rating:changed', (starRating) => {
       this.rating = starRating;
     });
-
-    // this.firebaseCordova.getToken().then((token) => {
-    //   console.log('token >>> ', token)
-
-    //   this.updateToken(token, firebase.auth().currentUser.uid);
-
-    // }).catch((error) => {
-    //   console.log('error >>> ', error)
-    // })
 
   }
 
@@ -69,21 +57,13 @@ export class SpotsPage {
     })
   }
 
-  // ionViewDidEnter() {
-  //   this.getSpots()
-  // }
-
   doRefresh(event) {
     this.spots = [];
-    // setTimeout(() => {
     this.getSpots();
-
     if (this.infiniteEvent) {
       this.infiniteEvent.enable(true);
     }
-
     event.complete();
-    // }, 1000);
   }
 
   imageTapped(card) {
@@ -128,10 +108,10 @@ export class SpotsPage {
         }
       })
     });
-
     query.get()
     .then((documents) => {
       documents.forEach((document) => {
+        console.log(document.data())
         this.spots.push({
           spotId: document.id,
           avatarImageUrl: 'assets/imgs/user.svg',

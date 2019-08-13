@@ -69,5 +69,5 @@
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="To locate you" />
     </plugin>
     <plugin name="cordova-plugin-nativeaudio" spec="3.0.9" />
-    <engine name="android" spec="~6.4.0" />
+    <engine name="android" spec="6.4.0" />
 </widget>

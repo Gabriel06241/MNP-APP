@@ -5,5 +5,5 @@ export interface User {
   cash?: number;
   phone?: number,
   active?: boolean,
-  timeDifer?: number; // value in minutes
+  timeDifer?: number; // value in seconds
 }

@@ -5,6 +5,7 @@ import { Http } from '@angular/http';
 import { GoogleMaps } from "@ionic-native/google-maps";
 import { Geolocation, Geoposition } from '@ionic-native/geolocation';
 import * as firebase from 'Firebase';
+import { DatabaseProvider } from "../../providers/database/database";
 
 declare var google: any;
 
@@ -14,12 +15,11 @@ declare var google: any;
   templateUrl: 'spots-map.html',
 })
 export class SpotsMapPage {
-
   @ViewChild('map') mapContainer: ElementRef;
   map: any;
   spotsList: any = [];
+  spotsFirebase: any = [];
   infoWindowList: any = [];
-
   markers = [];
   ref = firebase.database().ref('geolocations/');
 
@@ -28,9 +28,28 @@ export class SpotsMapPage {
     public navParams: NavParams,
     public geolocation: Geolocation,
     public googleMaps: GoogleMaps,
-    public http: Http
+    public http: Http,
+    public database: DatabaseProvider,
   ) {
+
     this.getPosition();
+
+    this.database.getAllDocuments('spots')
+    .then((spots) => {
+      spots.map((spot)=> {
+        if (spot.name !== '') {
+          this.spotsFirebase.push({
+            'nombre': spot.name,
+            'direccion': spot.description,
+            'latitude': spot.latitude,
+            'longitude': spot.longitude
+          });
+        }
+      })
+    })
+
+    console.log(this.spotsFirebase);
+
     this.http.get('assets/data/locations.json').map(res => res.json())
     .subscribe(data => {
       this.spotsList = data.spots;
@@ -69,9 +88,11 @@ export class SpotsMapPage {
   }
 
   getMarkers() {
-    for (let _i = 0; _i < this.spotsList.length; _i++) {
-      if (_i > 0) {
-        this.addMarkersToMap(this.spotsList[_i]);
+    // for (let i = 0; i < this.spotsList.length; i++) {
+    for (let i = 0; i < this.spotsFirebase.length; i++) {
+      if (i > 0) {
+        // this.addMarkersToMap(this.spotsList[i]);
+        this.addMarkersToMap(this.spotsFirebase[i]);
       }
     }
   }

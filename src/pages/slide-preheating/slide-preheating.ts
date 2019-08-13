@@ -15,19 +15,19 @@ export class SlidePreheatingPage {
     {
       title: 'Recomendaciones',
       imageUrl: 'assets/imgs/slides/slide2.jpg',
-      description: 'Antes de iniciar cualquier actividad, el prácticante debe tener una sesión de movilidad articular y calentamiento general de 15 a 20 minutos. \n \n Ademas de un gran trabajo previo en aspectos técnicos como trote, carrera, salto y recepción con el fin de que active sus funciones motoras, fuerza y resistencia en las articulaciones y músculos, esto contribuira a reducir cualquier tipo de lesión. \n\n\n Los menores de edad deben estar acompañados de un adulto responsable.',
+      description: 'Antes de iniciar cualquier actividad, el prácticante debe tener una sesión de movilidad articular y calentamiento general de 15 a 20 minutos. \n \n Además de un gran trabajo previo en aspectos técnicos como trote, carrera, salto y recepción, con el fin de que active sus funciones motoras, fuerza y resistencia en las articulaciones y músculos. Esto contribuira a reducir cualquier tipo de lesión. \n\n\n Los menores de edad deben estar acompañados de un adulto responsable.',
       imageStageDetail: ''
     },
     {
       title: 'Etapa 1 - Movilidad articular',
       imageUrl: 'assets/imgs/slides/slide3.jpg',
-      description: 'Antes de iniciar la práctica, se debe hacer un proceso de movilidad articular en cada una de las articulaciones, este se hace siguiendo un orden ascedente (desde los tobillos hasta el cuello), o descendente (desde el cuello hasta los tobillos), el movimiento por cada articulación, es de 15 a 20 segundos, hasta completar.',
+      description: 'Antes de iniciar la práctica, se debe hacer un proceso de movilidad articular en cada una de las articulaciones. Esto se hace siguiendo un orden ascedente (desde los tobillos hasta el cuello), o descendente (desde el cuello hasta los tobillos). El movimiento por cada articulación es de 15 a 20 segundos, hasta completar.',
       imageStageDetail: ''
     },
     {
       title: 'Etapa 2 - Calentamiento',
       imageUrl: 'assets/imgs/slides/slide4.jpg',
-      description: 'Para iniciar el calentamiento general, se da inicio con 10 minutos como mínimo de trote con desplazamiento por un área especifica, luego se intercalan ejercicios que se relacionen con los movimientos que se van a trabajar en la practica de la rutina.',
+      description: 'El calentamiento general inicia con 10 minutos como mínimo de trote; con desplazamiento por un área especifica. Luego se intercalan ejercicios que se relacionen con los movimientos que se van a trabajar en la practica de la rutina.',
       imageStageDetail: ''
     },
     {

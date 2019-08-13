@@ -45,34 +45,33 @@ export class ExerciseListPage {
 
   doRefresh(event) {
     setTimeout(() => {
-      // this.getData();
       event.complete();
     }, 200);
   }
 
   getExercises() {
     firebase.firestore()
-      .collection("exercises")
-      .get()
-      .then(data => {
-        data.forEach((document) => {
-          if (this.exercisesIds.indexOf(document.id) != -1) {
-            this.exercises.push({
-              routineId: this.routineId,
-              routineName: this.routineName,
-              routineCategory: this.routineCategory,
-              title: document.data().name,
-              description: document.data().descripcion,
-              repetitions: (document.data()[this.routineCategory]) ? document.data()[this.routineCategory].repeticiones : '',
-              series: (document.data()[this.routineCategory]) ? document.data()[this.routineCategory].series : '',
-              exerciseImage: "assets/exercises/" + this.utils.removeAccents(document.data().name) + ".gif"
-            })
-          }
-        })
+    .collection("exercises")
+    .get()
+    .then(data => {
+      data.forEach((document) => {
+        if (this.exercisesIds.indexOf(document.id) != -1) {
+          this.exercises.push({
+            routineId: this.routineId,
+            routineName: this.routineName,
+            routineCategory: this.routineCategory,
+            title: document.data().name,
+            description: document.data().descripcion,
+            repetitions: (document.data()[this.routineCategory]) ? document.data()[this.routineCategory].repeticiones : '',
+            series: (document.data()[this.routineCategory]) ? document.data()[this.routineCategory].series : '',
+            exerciseImage: "assets/exercises/" + this.utils.removeAccents(document.data().name) + ".gif"
+          })
+        }
       })
-      .catch(error => {
-        console.log(error);
-      });
+    })
+    .catch(error => {
+      console.log(error);
+    });
   }
 
   startSlide() {

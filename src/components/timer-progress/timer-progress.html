@@ -1,7 +1,5 @@
-<!-- Generated template for the TimerProgressComponent component -->
 <ion-card *ngIf="timer">
   <ion-card-header class="circulo">
-    <!-- <h1 text-right>{{currentExerciseNumber}}</h1> -->
     <div class="radial-progress" data-progress="0">
       <div class="circle">
         <div class="mask full" [style.transform]="transform">
@@ -14,35 +12,8 @@
         <div class="shadow"></div>
       </div>
       <div class="inset">
-        <!-- <div class="percentage" hidden>{{timer.displayTime}}</div> -->
-        <!-- <div class="percentage">{{timer.displayTime}}</div> -->
         <div class="percentage">{{timer.displayTime}}</div>
-        <!-- <div class="percentage">{{timer.displayOpenTime}}</div> -->
       </div>
     </div>
-    <!-- <button ion-button *ngIf="!timeInSeconds || timeInSeconds == 0" large block clear class="timer-button">Timer set up incorrectly</button> -->
-    <!-- <ion-item *ngIf="timeInSeconds && timeInSeconds > 0"> -->
-    <!-- <h1>{{currentExerciseNumber}}</h1> -->
-    <!-- <button ion-button clear class="large" color="danger" item-start *ngIf="!timer.runTimer && (timer.hasStarted || timer.hasFinished) || timer.hasFinished"> -->
-    <!-- <button ion-button clear class="large" color="danger" (click)="initTimer()" item-start *ngIf="!timer.runTimer && (timer.hasStarted || timer.hasFinished) || timer.hasFinished"> -->
-    <!-- <ion-icon name="refresh"></ion-icon> -->
-    <!-- REINICAR -->
-    <!-- </button> -->
-    <!-- <button ion-button clear class="large" item-end *ngIf="timer.runTimer && timer.hasStarted && !timer.hasFinished"> -->
-    <!-- <button ion-button clear class="large" (click)="pauseTimer()" item-end *ngIf="timer.runTimer && timer.hasStarted && !timer.hasFinished"> -->
-    <!-- <ion-icon name="pause"></ion-icon> -->
-    <!-- PAUSAR -->
-    <!-- </button> -->
-    <!-- <button ion-button clear class="large" item-end *ngIf="!timer.runTimer && timer.hasStarted && !timer.hasFinished"> -->
-    <!-- <button ion-button clear class="large" (click)="resumeTimer()" item-end *ngIf="!timer.runTimer && timer.hasStarted && !timer.hasFinished"> -->
-    <!-- <ion-icon name="play"></ion-icon> -->
-    <!-- CONTINUAR -->
-    <!-- </button> -->
-    <!-- <button ion-button clear class="large" item-end *ngIf="!timer.hasStarted"> -->
-    <!-- <button ion-button clear class="large" (click)="startTimer()" item-end *ngIf="!timer.hasStarted"> -->
-    <!-- <ion-icon name="play"></ion-icon> -->
-    <!-- INICIAR -->
-    <!-- </button> -->
-    <!-- </ion-item> -->
   </ion-card-header>
 </ion-card>

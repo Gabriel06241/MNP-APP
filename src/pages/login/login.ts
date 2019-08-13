@@ -19,7 +19,6 @@ export class LoginPage {
   resetPassword = false;
   connected: Subscription;
   disconnected: Subscription;
-  // flag: boolean = false;
   flag: boolean = true;
 
   constructor(
@@ -34,12 +33,10 @@ export class LoginPage {
   ) {
     this.connected = this.network.onConnect().subscribe(data => {
       this.flag = true;
-      // this.displayNetworkUpdate(data.type);
     }, error => console.error(error));
 
     this.disconnected = this.network.onDisconnect().subscribe(data => {
       this.flag = false;
-      // this.displayNetworkUpdate(data.type);
     }, error => console.error(error));
   }
 
@@ -122,7 +119,6 @@ export class LoginPage {
         {
           text: 'Recuperar',
           handler: data => {
-            // this.utilsProvider.checkConnection();
             this.sendResetEmail(data.email).then((response) => {
               let toastMsg = this.toastCtrl.create({
                 message: 'Correo enviado exitosamente!',

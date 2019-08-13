@@ -102,7 +102,6 @@ export class CountdownPage {
     let userTraining = {
       timeStart: this.dateTimeStart.format(),
       timeEnd: this.dateTimeEnd.format(),
-      // timeDiff: moment(this.dateTimeEnd).diff(this.dateTimeStart, 'seconds') - 300,
       timeDiff: moment(this.dateTimeEnd).diff(this.dateTimeStart, 'seconds'),
       userId: this.currentUserId,
       routineId: this.currentExercise.routineId,
