@@ -4,13 +4,6 @@ import { Camera } from '@ionic-native/camera';
 import { ImagePicker } from '@ionic-native/image-picker';
 import { Crop } from '@ionic-native/crop';
 
-/**
- * Generated class for the AboutPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-about',
@@ -27,13 +20,7 @@ export class AboutPage {
     public imagePicker: ImagePicker,
     public camera: Camera,
     public cropService: Crop
-  ) {
-
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AboutPage');
-  }
+  ) { }
 
   presentActionSheet() {
     let actionSheet = this.actionSheetCtrl.create({
@@ -95,10 +82,6 @@ export class AboutPage {
           .then(cropped_image => this.photos.push(cropped_image));
       });
     }, Promise.resolve());
-  }
-
-  filterCategory(category) {
-    console.log('Console ==>> ', category);
   }
 
 }

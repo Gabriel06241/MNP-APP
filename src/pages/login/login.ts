@@ -1,19 +1,14 @@
 import { UtilsProvider } from './../../providers/utils/utils';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, ToastController, Events } from 'ionic-angular';
+import { NavController, NavParams, AlertController, ToastController, Events } from 'ionic-angular';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { UserProvider } from '../../providers/user/user';
 import { HomePage } from "./../home/home";
 import { UserPage } from "./../user/user";
+import { Subscription} from 'rxjs/Subscription';
+import { MESSAGE_ERROR } from "./../../app/app.errors";
+import { Network } from '@ionic-native/network';
 
-/**
- * Generated class for the LoginPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
-@IonicPage()
 @Component({
   selector: 'page-login',
   templateUrl: 'login.html',
@@ -22,7 +17,9 @@ export class LoginPage {
 
   user: any = {};
   resetPassword = false;
-  error: any;
+  connected: Subscription;
+  disconnected: Subscription;
+  flag: boolean = true;
 
   constructor(
     public navCtrl: NavController,
@@ -32,13 +29,25 @@ export class LoginPage {
     public forgotCtrl: AlertController,
     public toastCtrl: ToastController,
     public utilsProvider: UtilsProvider,
-    public events: Events
+    private network: Network
   ) {
+    this.connected = this.network.onConnect().subscribe(data => {
+      this.flag = true;
+    }, error => console.error(error));
 
+    this.disconnected = this.network.onDisconnect().subscribe(data => {
+      this.flag = false;
+    }, error => console.error(error));
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
+  displayNetworkUpdate(connectionState: string) {
+    let networkType = this.network.type;
+    this.utilsProvider.showToast(`You are now ${connectionState} via ${networkType}`);
+  }
+
+  ionViewWillLeave() {
+    this.connected.unsubscribe();
+    this.disconnected.unsubscribe();
   }
 
   registerUser() {
@@ -49,42 +58,47 @@ export class LoginPage {
     if (this.utilsProvider.validateDataUser(user)) {
       return this.utilsProvider.showAlert("Error campos vacíos", "Por favor complete todos los campos.");
     }
-
-   try {
-      await this.userProvider.getUserFromFieldValue('email', user.email)
-        .then((response) => {
-          this.userProvider.setCurrentUser(response[0]);
-          if (response.length) {
-            user.exist = true;
-            user.activo = response[0].activo;
-            user.perfil = response[0].perfil;
-            // this.afAuth.auth.onAuthStateChanged((currentUser) => {
-            //   user.emailVerified = currentUser.emailVerified;
-            //   // currentUser.updateProfile({
-            //   //   displayName: user.fullName,
-            //   //   photoURL: 'some/url'
-            //   // });
-            // });
-          }
-        }, (err) => {
-          console.log('trying to get getUsuarioFromFieldValue', err)
-        });
-    } catch (error) {
-      console.log('error @loginUser => ', error.message);
-    }
-
-    if (!user.exist) {
-      this.utilsProvider.showToast("Correo y/o contraseña incorrectos!");
+    const internetConnection = this.utilsProvider.checkConnection();
+    if (!internetConnection) {
+      this.utilsProvider.showAlert('Ooops, Lo sentimos...', 'Revisa tu conexion a internet!');
     } else {
       this.utilsProvider.showLoading('Por favor espere...');
       try {
-        const result = await this.afAuth.auth.signInWithEmailAndPassword(user.email, this.utilsProvider.getHashMd5(user.password))
-        if (result) {
-          this.navCtrl.setRoot(HomePage, user);
-        }
+        await this.userProvider.getUserFromFieldValue('email', user.email)
+          .then((response) => {
+            this.userProvider.setCurrentUser(response[0]);
+            if (response.length) {
+              user.exist = true;
+              user.activo = response[0].activo;
+              user.perfil = response[0].perfil;
+              this.afAuth.auth.onAuthStateChanged((currentUser) => {
+                user.emailVerified = currentUser.emailVerified;
+                currentUser.updateProfile({
+                  displayName: user.fullName,
+                  photoURL: 'assets/imgs/user.svg'
+                });
+              });
+            }
+          }, (err) => {
+            console.log('trying to get getUsuarioFromFieldValue', err)
+          });
       } catch (error) {
-        if (error) {
-          this.utilsProvider.showToast(error.message);
+        console.log('error @loginUser => ', error.message);
+      }
+
+      if (!user.exist) {
+        this.utilsProvider.showToast("Correo y/o contraseña incorrectos!");
+      } else {
+        try {
+          const result = await this.afAuth.auth.signInWithEmailAndPassword(user.email, this.utilsProvider.getHashMd5(user.password))
+          if (result) {
+            this.navCtrl.setRoot(HomePage, user);
+          }
+        } catch (error) {
+          if (error) {
+            console.log('@error >> ', error)
+            this.utilsProvider.showToast(MESSAGE_ERROR[error.code]);
+          }
         }
       }
     }
@@ -93,8 +107,8 @@ export class LoginPage {
   forgotPassword() {
     let forgot = this.forgotCtrl.create({
       title: 'Recuperar contraseña',
-      message: "Ingrese su correo para restablecer su contraseña.",
-      inputs: [{ name: 'email', placeholder: 'Correo', type: 'email' }],
+      message: "Ingrese su correo para restablecer la contraseña.",
+      inputs: [{ name: 'email', placeholder: 'Correo electrónico', type: 'email' }],
       buttons: [
         {
           text: 'Cancelar',
@@ -105,19 +119,20 @@ export class LoginPage {
         {
           text: 'Recuperar',
           handler: data => {
-            let response = this.sendResetEmail(data.email)
-            .catch(error => {
-              console.log('@error => ', error);
-            });
-            console.log('@response => ', response);
-            this.toastCtrl.create({
-              message: 'Correo enviado exitosamente!',
-              duration: 3000,
-              position: 'top',
-              cssClass: 'dark-trans',
-              closeButtonText: 'OK',
-              showCloseButton: true
-            }).present();
+            this.sendResetEmail(data.email).then((response) => {
+              let toastMsg = this.toastCtrl.create({
+                message: 'Correo enviado exitosamente!',
+                duration: 3000,
+                position: 'top',
+                cssClass: 'dark-trans',
+                closeButtonText: 'OK',
+                showCloseButton: true
+              })
+              if (response['error']) {
+                toastMsg.setMessage(MESSAGE_ERROR[response['error'].code]);
+              }
+              toastMsg.present();
+            })
           }
         }
       ]
@@ -127,11 +142,10 @@ export class LoginPage {
 
   sendResetEmail(email) {
     return this.afAuth.auth.sendPasswordResetEmail(email)
-      .then(() => this.resetPassword = true)
-      .catch(_error => {
-        this.error = _error.message
-        return { error: 'error' };
-      })
+    .then(() => this.resetPassword = true)
+    .catch(_error => {
+      return { error: _error };
+    })
   }
 
 }

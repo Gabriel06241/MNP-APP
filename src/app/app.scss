@@ -321,7 +321,6 @@ ion-navbar.no-border {
     display: flex;
     align-items: center;
     justify-content: center;
-    //background: rgba(50, 10, 92, .4);
     .login-content {
       width: 86%;
       .logo {
@@ -533,14 +532,93 @@ ion-icon[ng-reflect-disabled="true"] {
   animation-name: fadeInDown;
 }
 
-// **** Ionic Simple Hacks **** //
-// Remove or Hide the scroll bar from ionic page
 * ::-webkit-scrollbar {
   display: none;
 }
 
-// Enable select text from ionic page
-// body {
-//   -webkit-user-select: text;
-//   user-select: text;
-// }
+.rating_alert {
+  border-radius: 8px;
+  .alert-wrapper {
+    border-radius: 8px;
+  }
+  .alert-button-group {
+    padding: 0;
+    margin-top: 10px;
+    flex-direction: row;
+    justify-content: space-around;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  button {
+    flex: 1 1 20%;
+    &.rate-icon-button {
+      width: 40px;
+      max-width: 20%;
+      min-width: auto;
+      height: 40px;
+      margin: 0 !important;
+      background-image: url("../assets/icon/emotions.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      border: none;
+      .button-inner {
+        visibility: hidden;
+      }
+      &:nth-child(1) {
+        background-position-y: 3px;
+      }
+      &:nth-child(2) {
+        background-position-y: -36px;
+      }
+      &:nth-child(3) {
+        background-position-y: -76px;
+      }
+      &:nth-child(4) {
+        background-position-y: -114px;
+      }
+      &:nth-child(5) {
+        background-position-y: -153px;
+      }
+      &.selected-rating {
+        position: relative;
+        overflow: visible;
+        &:after {
+          content: '';
+          position: absolute;
+          bottom: -4px;
+          height: 4px;
+          background-color: #2E6DFF;
+          width: 80%;
+          left: 10%;
+        }
+      }
+    }
+    &.rate-action-button {
+      text-align: center;
+      margin-top: 20px;
+      margin-right: 0;
+      border-top: 1px solid #c3c3c3;
+      .button-inner {
+        justify-content: center;
+      }
+      &.rate-later {
+        border-right: 1px solid #c3c3c3;
+      }
+      &.rate-now {
+        border-left: 1px solid #c3c3c3;
+      }
+    }
+  }
+}
+
+.backgroundTest {
+  background-color: white;
+  background: url("../assets/imgs/hydrate.png") no-repeat;
+  background-size: 100% 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  position: absolute;
+  z-index: 0;
+}

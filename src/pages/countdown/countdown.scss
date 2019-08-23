@@ -24,7 +24,6 @@ page-countdown {
     position: absolute;
     margin-bottom: 50px;
     transition: all .4s linear;
-    // background-color: $base-color-transparent;
   }
   .floating-buttons button {
     color: white;
@@ -80,5 +79,32 @@ page-countdown {
     b {
       color: #000000;
     }
+  }
+  ion-modal,
+  .show-page {
+    background-color: rgba(0, 0, 0, .5) !important;
+    padding: 50px !important;
+  }
+  .toolbar-background {
+    color: red !important;
+  }
+  ion-modal.modal-wrapper {
+    transform: translateY(30%) !important;
+  }
+  ion-page.modal {
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .modal-backdrop-bg {
+    background-color: #000;
+    opacity: 0;
+  }
+  .active .modal-backdrop-bg {
+    opacity: 0.5;
+  }
+  ion-modal.inset-modal {
+    background-color: rgba(0, 0, 0, .5) !important;
+    transition: opacity .25s ease-in-out;
+    padding: 20vh 10vw;
   }
 }

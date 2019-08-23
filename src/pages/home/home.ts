@@ -1,10 +1,12 @@
-import { CategoryComponent } from './../../components/category/category';
 import { Component } from '@angular/core';
 import { PopoverController, NavController, NavParams } from 'ionic-angular';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
 import { ExerciseListPage } from '../exercise-list/exercise-list';
 import { DatabaseProvider } from '../../providers/database/database';
+import { CategoryComponent } from './../../components/category/category';
+import { UtilsProvider } from "../../providers/utils/utils";
+import firebase from 'firebase';
+import { Firebase } from '@ionic-native/firebase'
 
 @Component({
   selector: 'page-home',
@@ -12,40 +14,15 @@ import { DatabaseProvider } from '../../providers/database/database';
 })
 export class HomePage {
 
-  data: Observable<any>;
-  url: string;
   imageUrl: string;
   popover: any;
-
-  public isSearchbarOpening = false;
-  private _COLL: string = "routines";
-  public routines: any;
-  public collection: any[] = [
-    {
-      id: 123,
-      userId: 1,
-      category: 'Básico',
-      title: 'Abdominales',
-      body: 'Consiste en una serie de ejercicios para fortalecer los musculos de la parte abdominal del cuerpo.',
-      imageUrl: 'assets/exercises/abdominales.gif'
-    },
-    {
-      id: 456,
-      userId: 2,
-      category: 'Intermedio',
-      title: 'Brazos',
-      body: 'Consiste en una serie de ejercicios para el fortalecimiento de los bíceps.',
-      imageUrl: 'assets/exercises/fuerza_brazos.jpg'
-    },
-    {
-      id: 789,
-      userId: 3,
-      category: 'Avanzado',
-      title: 'Cuadrupedia',
-      body: 'Consiste en una serie de ejercicios para fortalecer los músculos cuadrúpedos.',
-      imageUrl: 'assets/exercises/cuadrupedos.gif'
-    }
-  ];
+  isSearchbarOpening = false;
+  searchQuery: string = '';
+  routines: any = [];
+  routinesNotFiltered: any = [];
+  routinesWasFiltered = false;
+  exercises: any = [];
+  pageSize: number = 10;
 
   constructor(
     public popoverCtrl: PopoverController,
@@ -53,40 +30,112 @@ export class HomePage {
     public http: HttpClient,
     public navParams: NavParams,
     private _DB: DatabaseProvider,
-  ) { }
-
-  ionViewDidEnter() {
-    this.retrieveCollection();
+    private utils: UtilsProvider,
+    private firebaseCordova: Firebase
+  ) {
+    this.getRoutines();
+    this.routinesNotFiltered = this.routines;
+    this.firebaseCordova.getToken().then((token) => {
+      this.updateToken(token, firebase.auth().currentUser.uid)
+    }).catch((error) => {
+      console.log('@error <<<<<< ', error)
+    })
   }
 
-  retrieveCollection(): void {
-    this._DB.getDocuments(this._COLL)
-      .then((data) => {
-        console.log('@data ===>>>> ', JSON.stringify(data, null, 2));
-      }).catch();
+  updateToken(token: string, uid: string) {
+    firebase.firestore().collection('users').doc(uid).set({
+      token: token,
+      tokenUpdate: firebase.firestore.FieldValue.serverTimestamp()
+    }, {
+      merge: true
+    }).then(() => {
+      console.log('token Saved...');
+    }).catch((error) => {
+      console.log('trying to saving token...');
+    })
   }
 
   onSearch(event) {
-    console.log(event);
+    console.log('@event >>> ', event);
   }
 
   presentPopover(event: Event) {
     this.popover = this.popoverCtrl.create(CategoryComponent);
     this.popover.present({ ev: event });
+    this.popover.onWillDismiss((data) => {
+      let routinesFilter = []
+      let arrayToFilter = (JSON.stringify(this.routines) == JSON.stringify(this.routinesNotFiltered)) ? 'routines' : 'routinesNotFiltered';
+      if (data && data.filter) {
+        this[arrayToFilter].filter((item) => {
+          if (item.category == data.filter) {
+            routinesFilter.push(item);
+          }
+        });
+        this.routines = routinesFilter;
+      }
+    });
   }
 
   doRefresh(event) {
     setTimeout(() => {
-      // this.getData();
+      this.getRoutines();
       event.complete();
     }, 1000);
+  }
+
+  getRoutines() {
+    this.routines = [];
+    this.exercises = [];
+    let queryExercises = firebase.firestore().collection("exercises");
+    queryExercises.get()
+      .then((documents) => {
+        documents.forEach((document) => {
+          this.exercises.push({
+            id: document.id,
+            name: document.data().name,
+            description: document.data().descripcion,
+            imageName: this.utils.removeAccents(document.data().name) + '.gif'
+          })
+        })
+      }).catch((error) => {
+        console.log(error);
+      })
+
+    let queryRoutines = firebase.firestore().collection("routines").limit(this.pageSize);
+    queryRoutines.get()
+    .then((documents) => {
+      documents.forEach((document) => {
+        this.routines.push({
+          id: document.id,
+          category: document.data().categoria,
+          title: document.data().nombre,
+          body: document.data().descripcion,
+          imageUrl: 'assets/exercises/' + this.filterExercisesByDocId(document.data().ejercicios[this.getRandomInt(document.data().ejercicios.length)]),
+          exercises: document.data().ejercicios,
+          muscles: document.data().musculos
+        })
+      })
+    }).catch((error) => {
+      console.log(error);
+    })
   }
 
   getExerciseFromRoutine(routine) {
     this.navCtrl.push(ExerciseListPage, { routine: routine })
   }
 
-  filterCategory(category) {
-    this.popover.dimiss()
+  getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
   }
+
+  filterExercisesByDocId(document) {
+    let imageName = '';
+    this.exercises.filter((exercise) => {
+      if (exercise.id == document) {
+        imageName = exercise.imageName;
+      }
+    });
+    return imageName;
+  }
+
 }

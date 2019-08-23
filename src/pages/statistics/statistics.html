@@ -1,102 +1,52 @@
-<!--
-  Generated template for the StatisticsPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
   <ion-navbar color="primary">
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Estadisticas</ion-title>
-    <ion-buttons end>
-      <button ion-button>
-        <ion-icon name="md-pie"></ion-icon>
+    <ion-row>
+      <ion-title>Estadísticas</ion-title>
+      <button ion-button style="padding-right: 5px;" (click)="viewHistoryTrainings()">
+        Historial
       </button>
-      <button ion-button>
-        <ion-icon name="md-more"></ion-icon>
-      </button>
-    </ion-buttons>
+    </ion-row>
   </ion-navbar>
-
 </ion-header>
 
-
-<ion-content padding>
-
+<ion-content>
   <ion-card>
-    <!-- <button ion-button (click)="updateData()">Update Pie Chart Data</button> -->
-    <!-- <ion-card>
-      <ion-card-header>
-        Pie Chart
-      </ion-card-header>
-      <ion-card-content>
-        <canvas #pieCanvas></canvas>
-      </ion-card-content>
-    </ion-card> -->
-    <ion-card-header>
-      Nivel de intensidad por rutina
+    <ion-card-header text-center>
+      Tiempo estándar vs Tiempo que usaste
+      <p>(Tiempo en segundos)</p>
+      <p class="fixline" (click)="viewStatisticsDetail()">Instrucciones</p>
+      <ion-list text-wrap>
+        <ion-item text-wrap>
+          <ion-label>Rutinas</ion-label>
+          <ion-select name="test" (ionChange)="onChangeTraining($event)" text-wrap>
+            <ion-option *ngFor="let training of routineTrainings" [value]="training" text-wrap>{{training.routineName}} {{training.timeStart}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
     </ion-card-header>
     <ion-card-content>
       <canvas #barCanvas></canvas>
     </ion-card-content>
   </ion-card>
-  <!-- <ion-card>
-    <ion-card-header>
-      Doughnut Chart
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #doughnutCanvas></canvas>
-    </ion-card-content>
-  </ion-card> -->
-  <!-- <ion-card>
-    <ion-card-header>
-      Half Doughnut Chart
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #halfDoughnutCanvas></canvas>
-    </ion-card-content>
-  </ion-card> -->
   <ion-card>
-    <ion-card-header>
-      Evolucion de entrenamiento
+    <ion-card-header text-center>
+      Evolución de entrenamiento
+      <p>(Tiempo en segundos)</p>
+      <p class="fixline" (click)="viewStatisticsDetail()">Instrucciones</p>
+      <ion-list text-wrap>
+        <ion-item text-wrap>
+          <ion-label>Rutinas</ion-label>
+          <ion-select name="test" interface="popover" (ionChange)="onChangeRoutine($event)" text-wrap>
+            <ion-option text-wrap *ngFor="let routine of routines" [value]="routine">{{routine.routineName}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
     </ion-card-header>
     <ion-card-content>
       <canvas #lineCanvas></canvas>
     </ion-card-content>
   </ion-card>
-  <!-- <ion-card>
-    <ion-card-header>
-      Radar Chart
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #radarCanvas></canvas>
-    </ion-card-content>
-  </ion-card> -->
-  <!-- <ion-card>
-    <ion-card-header>
-      Polar Area Chart
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #polarCanvas></canvas>
-    </ion-card-content>
-  </ion-card>
-  <ion-card>
-    <ion-card-header>
-      Bubble Chart
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #bubbleCanvas></canvas>
-    </ion-card-content>
-  </ion-card>
-  <ion-card>
-    <ion-card-header>
-      Mixed Chart
-    </ion-card-header>
-    <ion-card-content>
-      <canvas #mixedCanvas></canvas>
-    </ion-card-content>
-  </ion-card> -->
 </ion-content>

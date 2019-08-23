@@ -1,12 +1,5 @@
 import { Component, Input } from '@angular/core';
 
-/**
- * Generated class for the CountdownTimerComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
-
 export interface CountdownTimer {
   seconds: number;
   // runTimer: number;
@@ -28,14 +21,11 @@ export class Timer {
   timer: CountdownTimer;
 
   ngOnInit() {
-    console.log('#1 ==>>> ', this.timeInSeconds);
     this.timeInSeconds = 150;
-    console.log('#1 ==>>> ', this.timeInSeconds);
     this.initTimer();
   }
 
   hasFinished() {
-    console.log('Finished #1...');
     return this.timer.hasFinished;
   }
 
@@ -52,7 +42,6 @@ export class Timer {
       // secondsRemaining: this.timeInSeconds
       secondsRemaining: 0
     };
-
     this.timer.displayTime = this.getSecondsAsDigitalClock(this.timer.secondsRemaining);
   }
 
@@ -82,7 +71,6 @@ export class Timer {
       if (this.timer.secondsRemaining < this.timeInSeconds) {
         this.timerTick();
       } else {
-        console.log('Real normal finished...');
         this.timer.hasFinished = true;
       }
     }, 1000);

@@ -1,9 +1,3 @@
-<!--
-  Generated template for the SpotsPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
   <ion-navbar color="primary">
     <button ion-button menuToggle>
@@ -21,31 +15,52 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  <ion-card *ngFor="let card of cards; let i=index">
+<ion-content>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-card *ngFor="let spot of spots; let i=index">
     <ion-item>
       <ion-avatar item-start>
-        <img [src]="card.avatarImageUrl" (click)="avatarTapped(card)">
+        <img [src]="spot.avatarImageUrl" (click)="avatarTapped(spot)">
       </ion-avatar>
-      <h2>{{card.name}}</h2>
-      <p>{{card.date}}</p>
+      <h2>{{spot.name}}</h2>
+      <p>{{spot.date}}</p>
     </ion-item>
-    <img [src]="card.postImageUrl" (click)="imageTapped(card)">
+    <img [src]="spot.postImageUrl" (click)="imageTapped(spot)">
     <ion-card-content>
-      <p>{{card.postText}}</p>
+      <p>{{spot.postText}}</p>
     </ion-card-content>
     <ion-row>
       <ion-col>
-        <rating [(ngModel)]="card.rating" color="card.color" [(readOnly)]="card.readOnly" max="5" emptyStarIconName="star-outline" halfStarIconName="star-half" starIconName="star" nullable="false" (ngModelChange)="onModelChange($event)"></rating>
+        <button ion-button icon-left clear class='text-sm' (click)="presentPopover(spot)">
+          <ion-icon name="star"></ion-icon>
+          Calificar
+        </button>
       </ion-col>
-      <!-- Selected rating: {{rating}} -->
-      <!-- </ion-col>
-      <ion-col center text-center>
-        <ion-note>
-          {{card.timestamp}}
-        </ion-note>
-      </ion-col>  -->
+      <ion-col>
+        <button ion-button icon-left clear class='text-sm' (click)="comment(spot)" *ngIf="spot.commentsCount == 1; else elsetag">
+          <ion-icon name="text"></ion-icon>
+          {{ spot.commentsCount }} Comentario
+        </button>
+        <ng-template #elsetag>
+          <button ion-button icon-left clear class='text-sm' (click)="comment(spot)">
+            <ion-icon name="text"></ion-icon>
+            {{ spot.commentsCount || 0 }} Comentarios
+          </button>
+        </ng-template>
+      </ion-col>
+      <ion-col>
+        <button ion-button icon-left clear class='text-sm'>
+          {{spot.timestamp}}
+        </button>
+      </ion-col>
     </ion-row>
   </ion-card>
+
+  <ion-infinite-scroll (ionInfinite)="loadMoreData($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 
 </ion-content>
