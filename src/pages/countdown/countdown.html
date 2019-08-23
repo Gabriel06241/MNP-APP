@@ -1,40 +1,29 @@
-<!--
-  Generated template for the CountdownPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
   <ion-navbar color="primary">
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Rutinas</ion-title>
+    <ion-title>Rutina</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <!-- <h2>Temporizador</h2> -->
-  <!-- <timer #countdownTimer [timeInSeconds]="2700"></timer> -->
-  <ion-card>
-    <!-- <img src="assets/exercises/abdominales.gif" width="150px" height="200px"> -->
-    <!-- <img src="assets/exercises/abdominales.gif"> -->
-    <!-- <ion-slides autoplay="3000" loop="true" speed="500" pager="true" (ionSlideWillChange)="onSlideChanged()"> -->
-    <ion-slides #slider effect="fade" pager="true" autoplay="15000" (ionSlideWillChange)="onSlideChanged()">
-      <ion-slide>
-        <img src="assets/exercises/abdominales_piernas_flexionadas.gif" width="150px" height="200px">
-      </ion-slide>
-      <ion-slide>
-        <img src="assets/exercises/abdominales_levantar_piernas.gif" width="150px" height="200px">
-      </ion-slide>
-      <ion-slide>
-        <img src="assets/exercises/abdominales_piernas_estiradas.gif" width="150px" height="200px">
-      </ion-slide>
-      <ion-slide>
-        <img src="assets/exercises/levantar_piernas_rodillas_pecho.gif" width="150px" height="200px">
-      </ion-slide>
-    </ion-slides>
-  </ion-card>
+  <h2>{{currentExercise.routineName}}</h2>
   <timer-progress #countdownTimerProgress [timeInSeconds]="3600"></timer-progress>
-
+  <h6 style="padding-left: 10px;">Ejercicio {{currentPosition}} de 5</h6>
+  <ion-card (click)="viewExerciseDetail()">
+    <img src="{{currentExercise.exerciseImage}}" width="150px" height="200px">
+  </ion-card>
+  <h6 text-center>Series: {{currentExercise.series}} | Repeticiones: {{currentExercise.repetitions}}</h6>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <button ion-button block color="danger" (click)='cancelRoutine()'>Cancelar</button>
+      </ion-col>
+      <ion-col>
+        <button ion-button block color="primary" [disabled]='disabledNextButton' [hidden]="hiddenNextBtn" (click)='nextExercise(currentPosition)'>Siguiente</button>
+        <button ion-button block color="sucess" [disabled]='disabledFinishButton' [hidden]="hiddenEndBtn" (click)='routineTimeFinished()'>Terminar</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

@@ -1,7 +1,7 @@
 // Global state (used for theming)
 import { AppState } from './app.global';
 
-// Ionic native providers o services
+// Ionic native providers/services
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { ImagePicker } from '@ionic-native/image-picker';
@@ -9,8 +9,11 @@ import { Crop } from '@ionic-native/crop';
 import { Camera } from '@ionic-native/camera';
 import { Geolocation } from "@ionic-native/geolocation";
 import { GoogleMaps } from "@ionic-native/google-maps";
+import { Network } from '@ionic-native/network';
+import { NativeAudio } from '@ionic-native/native-audio';
+// import { Firebase } from '@ionic-native/firebase'
 
-// Pages or Components
+// Pages
 import { LoginPage } from './../pages/login/login';
 import { HomePage } from '../pages/home/home';
 import { AboutPage } from "../pages/about/about";
@@ -23,8 +26,14 @@ import { SettingsPage } from "../pages/settings/settings";
 import { CountdownPage } from "../pages/countdown/countdown";
 import { ExerciseListPage } from "../pages/exercise-list/exercise-list";
 import { SpotsMapPage } from "../pages/spots-map/spots-map";
+import { CommentsPage } from './../pages/comments/comments';
+import { ExerciseDetailPage } from './../pages/exercise-detail/exercise-detail';
 import { SlidePreheatingPage } from './../pages/slide-preheating/slide-preheating';
+import { HydratePage } from '../pages/hydrate/hydrate';
+
+// Components
 import { CategoryComponent } from './../components/category/category';
+import { RatingViewComponent } from './../components/rating-view/rating-view';
 
 // Modules
 import { HttpModule } from '@angular/http'
@@ -39,6 +48,7 @@ import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { RoundProgressModule, ROUND_PROGRESS_DEFAULTS } from 'angular-svg-round-progressbar';
 import { StarRatingModule } from 'ionic3-star-rating';
 import { Ionic2RatingModule } from 'ionic2-rating';
+import { AgmCoreModule } from '@agm/core';
 
 // Services or Providers
 import { ToastService } from '../providers/utils/toast.service';
@@ -48,8 +58,15 @@ import { UtilsProvider } from '../providers/utils/utils';
 import { AuthProvider } from '../providers/auth/auth';
 import { RoutineProvider } from '../providers/routine/routine';
 import { DatabaseProvider } from '../providers/database/database';
+import { SpotProvider } from '../providers/spot/spot';
+import { MapServiceProvider } from './../providers/map-service/map-service';
+import { NetworkConnectionProvider } from '../providers/network-connection/network-connection';
 
 // Directives
+import { AutoHideDirective } from "../directives/auto-hide/auto-hide";
+
+// Pipes
+import { SearchPipe } from '../pipes/search';
 
 // Environment Configuration
 import { ENVIRONMENT } from "../environment/environment";
@@ -68,7 +85,11 @@ export const PAGES = [
   ExerciseListPage,
   SpotsMapPage,
   CategoryComponent,
-  SlidePreheatingPage
+  SlidePreheatingPage,
+  RatingViewComponent,
+  CommentsPage,
+  ExerciseDetailPage,
+  HydratePage
 ]
 
 export const MODULES = [
@@ -83,7 +104,10 @@ export const MODULES = [
   RoundProgressModule,
   ChartsModule,
   StarRatingModule,
-  Ionic2RatingModule
+  Ionic2RatingModule,
+  AgmCoreModule.forRoot({
+    apiKey: 'AIzaSyBR5tBOm2e05Uc5CCvygdLQK2AD4guNSHM'
+  })
 ];
 
 export const PROVIDERS = [
@@ -110,9 +134,19 @@ export const PROVIDERS = [
   ImagePicker,
   Crop,
   Geolocation,
-  GoogleMaps
+  GoogleMaps,
+  SpotProvider,
+  MapServiceProvider,
+  Network,
+  NetworkConnectionProvider,
+  NativeAudio
+  // Firebase
 ];
 
 export const DIRECTIVES = [
+  AutoHideDirective
+];
 
+export const PIPES = [
+  SearchPipe
 ];

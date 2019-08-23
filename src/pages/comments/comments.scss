@@ -1,0 +1,10 @@
+page-comments {
+  .rowStyle {
+    border: solid map-get($colors, primary) 1px;
+    corder-radius: 30px;
+    margin-top: 15px;
+    ion-input {
+      margin-top: 5px;
+    }
+  }
+}

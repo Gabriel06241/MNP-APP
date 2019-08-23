@@ -2,19 +2,12 @@ import { UserProvider } from './../../providers/user/user';
 import { AppState } from './../../app/app.global';
 import { LoginPage } from './../login/login';
 import { Component } from '@angular/core';
-import { NavController, IonicPage } from 'ionic-angular';
+import { NavController, IonicPage, LoadingController } from 'ionic-angular';
 import { Camera } from '@ionic-native/camera';
 import { AlertService } from '../../providers/utils/alert.service';
 import { ToastService } from './../../providers/utils/toast.service';
 import { AngularFireAuth } from 'angularfire2/auth';
-
-
-/**
- * Generated class for the SettingsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import firebase from 'firebase';
 
 @IonicPage()
 @Component({
@@ -23,22 +16,11 @@ import { AngularFireAuth } from 'angularfire2/auth';
 })
 export class SettingsPage {
 
-  profilePicture: string = 'assets/imgs/user.svg';
-  profileRef: any;
-  errorMessage: any;
-
   enableNotifications = true;
   enableTheming = true;
-  language: any;
-  currency: any;
-  paymentMethod: any;
-
-  languages = ['Spanish', 'English', 'Portuguese', 'French'];
-  paymentMethods = ['Paypal', 'Credit Card'];
-  currencies = ['COP', 'USD', 'EUR'];
 
   user = {
-    name: 'Gabriel...',
+    name: 'Default User',
     imageUrl: 'assets/imgs/user.svg'
   };
 
@@ -49,19 +31,13 @@ export class SettingsPage {
     public camera: Camera,
     public global: AppState,
     public userProvider: UserProvider,
-    public afAuth: AngularFireAuth
+    public afAuth: AngularFireAuth,
+    private loadingCtrl: LoadingController
   ) {
-    console.log('User log settings.. ', this.userProvider.getCurrentUser())
-
     this.afAuth.auth.onAuthStateChanged((currentUser) => {
-      // user.emailVerified = currentUser.emailVerified;
-      // emailVerified
-      // currentUser.updateProfile({
-      //   displayName: user.fullName,
-      //   photoURL: 'some/url'
-      // });
+      this.user.name = currentUser.displayName;
+      this.user.imageUrl = currentUser.photoURL;
     });
-
   }
 
   toggleNotifications() {
@@ -81,24 +57,75 @@ export class SettingsPage {
       quality: 50,
       allowEdit: true,
       cameraDirection: this.camera.Direction.FRONT,
-      destinationType: this.camera.DestinationType.DATA_URL
+      destinationType: this.camera.DestinationType.DATA_URL,
+      targetWidth: 600,
+      targetHeight: 600
     }).then((imageData) => {
       this.user.imageUrl = 'data:image/jpeg;base64,' + imageData;
+      this.afAuth.auth.onAuthStateChanged((currentUser) => {
+        this.createUploadTask(this.user.imageUrl, currentUser.uid);
+      });
     }, (err) => {
-      this.toastCtrl.create('Error: ' + err);
+      console.log('Error: ' + err);
+      this.toastCtrl.create('Imagen no seleccionada!');
     });
   }
 
   logOut() {
-    this.alertService.presentAlertWithCallback('Cerrar Sesión',
-      '¿Estás seguro que deseas salir?').then((yes) => {
-        if (yes) {
-          this.navCtrl.setRoot(LoginPage);
-        }
-      });
+    this.alertService.presentAlertWithCallback('Cerrar Sesión', '¿Estás seguro que deseas salir?')
+    .then((yes) => {
+      if (yes) {
+        this.navCtrl.setRoot(LoginPage);
+      }
+    });
   }
 
   changeTheme(theme) {
     this.global.set('theme', theme);
   }
+
+  createUploadTask(file: string, name: string) {
+    return new Promise((resolve, reject) => {
+      let loading = this.loadingCtrl.create({
+        content: 'Espera por favor...',
+      });
+      loading.present()
+
+      const pictures = firebase.storage().ref(`images/` + name);
+      const uploadTask = pictures.putString(file, 'data_url');
+
+      loading.setContent('Uploading Image...')
+
+      uploadTask.on('state_changed', function (snapshot: firebase.storage.UploadTaskSnapshot) {
+        let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        loading.setContent(`Uploaded ${Math.round(progress)}% ...`)
+      }, (error) => {
+        loading.dismiss()
+        console.log('Error in uploadTask.on >> ', error);
+      }, () => {
+        // Handle successful uploads on complete
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          this.afAuth.auth.onAuthStateChanged((currentUser) => {
+            currentUser.updateProfile({
+              displayName: currentUser.displayName,
+              photoURL: downloadURL
+            }).then(() => {
+              console.log('update success onAuthStateChanged')
+              loading.dismiss()
+              resolve()
+            }).catch(() => {
+              console.log('update NOT success onAuthStateChanged')
+              loading.dismiss()
+              reject()
+            })
+          });
+        }).catch((error) => {
+          console.log('Error in uploadTask.snapshot.ref >> ', error);
+          loading.dismiss()
+          reject();
+        });
+      });
+    })
+  }
+
 }

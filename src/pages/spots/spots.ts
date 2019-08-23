@@ -1,22 +1,14 @@
+// import { Firebase } from '@ionic-native/firebase'
+import { RatingViewComponent } from './../../components/rating-view/rating-view';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { PopoverController, IonicPage, AlertController, NavController, ActionSheetController, ToastController, LoadingController, ModalController } from 'ionic-angular';
 import { SpotsMapPage } from '../spots-map/spots-map';
 import { SpotPage } from '../spot/spot';
 import { Events } from 'ionic-angular';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
-// import * as firebase from 'firebase';
-// import 'firebase/firestore';
-// import { Ionic2RatingModule } from "ionic2-rating";
-import { Spot } from '../../models/Spot';
-import { SpotProvider } from '../../providers/spot/spot';
-
-
-/**
- * Generated class for the SpotsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import firebase from 'firebase';
+import moment from 'moment';
+import { UtilsProvider } from '../../providers/utils/utils';
+import { CommentsPage } from '../comments/comments';
 
 @IonicPage()
 @Component({
@@ -25,76 +17,82 @@ import { SpotProvider } from '../../providers/spot/spot';
 })
 export class SpotsPage {
 
-  cards = [
-    {
-      avatarImageUrl: 'assets/imgs/user.svg',
-      postImageUrl: 'assets/imgs/spots/spot01.jpg',
-      name: 'Gabriel Pérez',
-      postText: 'Lugar ideal para un dia de entrenamiento funcional ubicado en la loma de la cruz de la ciudad de Cali',
-      date: 'Febrero 09, 2019',
-      rating: 1.1,
-      readOnly: false,
-      color: "red",
-      timestamp: '11h ago'
-    },
-    {
-      avatarImageUrl: 'assets/imgs/user.svg',
-      postImageUrl: 'assets/imgs/spots/spot02.jpg',
-      name: 'Test user',
-      postText: 'Barrio san antonio en cali, perfecto para realizar un entrenamiento para fortalecer la cuadrupedia.',
-      date: 'Enero 13, 2018',
-      rating: 4.5,
-      readOnly: true,
-      color: "red",
-      timestamp: '30yr ago'
-    },
-    {
-      avatarImageUrl: 'assets/imgs/user.svg',
-      postImageUrl: 'assets/imgs/spots/spot03.jpg',
-      name: 'Mao',
-      postText: 'Parque las tortugas ubicado en la ciudad de cali donde podremos realizar entrenamientos de distintas rutinas.',
-      date: 'Diciembre 16, 2018',
-      rating: 3.2,
-      readOnly: false,
-      color: "red",
-      timestamp: '2d ago'
-    },
-    {
-      avatarImageUrl: 'assets/imgs/user.svg',
-      postImageUrl: 'assets/imgs/spots/spot04.jpg',
-      name: 'Test User',
-      postText: 'Rio pance, perfecto para realizar ejercicios en el agua y fortalecimiento muscular bajo el agua.',
-      date: 'Enero 20, 2018',
-      rating: 3.2,
-      readOnly: false,
-      color: "red",
-      timestamp: '2d ago'
-    },
-  ];
+  spots: any = [];
+  spotId: string = '';
+  pageSize: number = 10;
+  cursor: any;
+  infiniteEvent: any;
 
   rating: number = 1.2;
-
-  // spots: AngularFirestoreCollection<Spot>;
-  // spot: Spot[];
+  popover: any;
 
   constructor(
     public navCtrl: NavController,
     public events: Events,
-    public spots: SpotProvider,
+    public alertCtrl: AlertController,
+    public popoverCtrl: PopoverController,
+    public actionCtrl: ActionSheetController,
+    public utilsProvider: UtilsProvider,
+    public toastCtrl: ToastController,
+    public loadingCtrl: LoadingController,
+    public modalCtrl: ModalController,
+    // private firebaseCordova: Firebase
   ) {
+
+    this.getSpots();
+
     events.subscribe('star-rating:changed', (starRating) => {
-      console.log(starRating);
       this.rating = starRating;
     });
+
+    // this.firebaseCordova.getToken().then((token) => {
+    //   console.log('token >>> ', token)
+
+    //   this.updateToken(token, firebase.auth().currentUser.uid);
+
+    // }).catch((error) => {
+    //   console.log('error >>> ', error)
+    // })
+
   }
 
-  ionViewDidEnter() {
-    // this.spots.getSpots()
+  updateToken(token: string, uid: string) {
+    firebase.firestore().collection('users').doc(uid).set({
+      token: token,
+      tokenUpdate: firebase.firestore.FieldValue.serverTimestamp()
+    }, {
+      merge: true
+    }).then(() => {
+      console.log('Token saved to cloud firestore!')
+    }).catch((error) => {
+      console.log('error <<<< ', error)
+    })
   }
 
-  imageTapped(card) { }
+  // ionViewDidEnter() {
+  //   this.getSpots()
+  // }
 
-  avatarTapped(card) { }
+  doRefresh(event) {
+    this.spots = [];
+    // setTimeout(() => {
+    this.getSpots();
+
+    if (this.infiniteEvent) {
+      this.infiniteEvent.enable(true);
+    }
+
+    event.complete();
+    // }, 1000);
+  }
+
+  imageTapped(card) {
+    console.log('console @avatarTapped() >>>> ', card)
+  }
+
+  avatarTapped(card) {
+    console.log('console @avatarTapped() >>>> ', card)
+  }
 
   allUbicationsMap() {
     this.navCtrl.push(SpotsMapPage)
@@ -104,6 +102,158 @@ export class SpotsPage {
     this.navCtrl.push(SpotPage);
   }
 
-  onModelChange(event) { }
+  onModelChange(event) {
+    console.log('console onModelChange() >>>>>> ', event);
+  }
+
+  getSpots() {
+    this.spots = [];
+    let loading = this.loadingCtrl.create({
+      content: 'Cargando spots...'
+    })
+    loading.present();
+    let query = firebase.firestore().collection("spots").orderBy("created", "desc").limit(this.pageSize);
+    query.onSnapshot((snapshot) => {
+      console.log('spot have changed...')
+      let changesDocs = snapshot.docChanges();
+      changesDocs.forEach((change) => {
+        if (change.type == 'added') {
+          console.log('document added');
+        }
+        if (change.type == 'modified') {
+          console.log(`El spot ${change.doc.data().name} has been modified`);
+        }
+        if (change.type == 'removed') {
+          console.log('document removed');
+        }
+      })
+    });
+
+    query.get()
+    .then((documents) => {
+      documents.forEach((document) => {
+        this.spots.push({
+          spotId: document.id,
+          avatarImageUrl: 'assets/imgs/user.svg',
+          postImageUrl: document.data().photoUrl,
+          name: document.data().name,
+          postText: document.data().description,
+          date: moment.unix(document.data().created.seconds).locale('es').format("DD MMMM YYYY hh:mm A"),
+          rating: document.data().rating,
+          raters: document.data().raters,
+          readOnly: false,
+          commentsCount: document.data().commentsCount || 0,
+          color: "red",
+          timestamp: this.getTimeAgo(moment.unix(document.data().created.seconds))
+        })
+        this.cursor = this.spots[this.spots.length - 1];
+      })
+      loading.dismiss();
+    })
+    .catch((error) => {
+      console.log('error @getSpots', error);
+    })
+  }
+
+  loadMoreData(event) {
+    firebase.firestore().collection("spots").orderBy("created", "desc")
+      .startAfter(this.cursor).limit(this.pageSize).get()
+      .then((documents) => {
+        documents.forEach((document) => {
+          this.spots.push({
+            spotId: document.id,
+            avatarImageUrl: 'assets/imgs/user.svg',
+            postImageUrl: document.data().photoUrl,
+            name: document.data().name,
+            postText: document.data().description,
+            date: moment.unix(document.data().created.seconds).locale('es').format("DD MMMM YYYY hh:mm A"),
+            rating: 2,
+            readOnly: false,
+            color: "red",
+            timestamp: this.getTimeAgo(moment.unix(document.data().created.seconds))
+          })
+
+          if (documents.size < this.pageSize) {
+            event.enable(false);
+            this.infiniteEvent = event;
+          } else {
+            event.complete();
+            this.cursor = this.spots[this.spots.length - 1];
+          }
+        })
+      })
+      .catch((error) => {
+        console.log('error @getSpots', error);
+      })
+  }
+
+  getTimeAgo(time) {
+    let difference = moment(time).diff(moment())
+    return moment.duration(difference).locale('es').humanize()
+  }
+
+  presentPopover(event: Event) {
+    this.popover = this.popoverCtrl.create(RatingViewComponent, { event });
+    this.popover.present({ ev: event });
+  }
+
+  comment(spot) {
+    this.actionCtrl.create({
+      buttons: [
+        {
+          text: "Ver todos los comentarios",
+          handler: () => {
+            this.modalCtrl.create(CommentsPage, {
+              "spot": spot
+            }).present();
+          }
+        },
+        {
+          text: "Ingresar un comentario",
+          handler: () => {
+            this.alertCtrl.create({
+              title: 'Nuevo comentario',
+              message: 'Escribe tu comentario',
+              inputs: [
+                {
+                  name: 'comment',
+                  type: 'text'
+                }
+              ],
+              buttons: [
+                {
+                  text: 'Cancelar'
+                },
+                {
+                  text: 'Comentar',
+                  handler: (data) => {
+                    if (data.comment) {
+                      firebase.firestore().collection('comments').add({
+                        text: data.comment,
+                        spotId: spot.spotId,
+                        owner: firebase.auth().currentUser.uid,
+                        owner_name:firebase.auth().currentUser.displayName,
+                        created: firebase.firestore.FieldValue.serverTimestamp()
+                      }).then((doc) => {
+                        this.toastCtrl.create({
+                          message: 'Comentario guardado correctamene!',
+                          duration: 3000
+                        })
+                      }).catch((error) => {
+                        this.toastCtrl.create({
+                          message: error.message,
+                          duration: 3000
+                        }).present();
+                      })
+                    }
+                  }
+                }
+              ]
+            }).present();
+          }
+        }
+      ]
+    }).present();
+  }
 
 }

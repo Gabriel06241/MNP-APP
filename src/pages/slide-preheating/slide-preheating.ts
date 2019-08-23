@@ -1,13 +1,6 @@
 import { CountdownPage } from './../countdown/countdown';
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, Slides } from 'ionic-angular';
-
-/**
- * Generated class for the SlidePreheatingPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { IonicPage, NavController, Slides, NavParams } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -38,24 +31,33 @@ export class SlidePreheatingPage {
       imageStageDetail: ''
     },
     {
-      title: 'Etapa 3 - Estiramiento (Post entrenamiento)',
+      title: 'Etapa 3 - Estiramiento',
       imageUrl: 'assets/imgs/slides/slide5.jpg',
       description: 'El estiramiento hace referencia a la práctica de ejercicios suaves y mantenidos para aumentar el rango de mantenimiento en las articulaciones. \n El estiramiento debe ser progresivo, sin forzar el músculo hasta sentir una tensión moderada y se sostendrá esta posición entre 10 y 15 segundos si no se siente dolor.',
       imageStageDetail: ''
     }
   ];
+  exercises: any[] = [];
 
-  constructor(public navCtrl: NavController) { }
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams
+  ) {
+    this.exercises = this.navParams.get("exercises");
+  }
 
   onSlideChanged() {
     this.slideIndex = this.slider.getActiveIndex();
   }
 
   goToApp() {
-    this.navCtrl.setRoot(CountdownPage);
+    this.navCtrl.setRoot(CountdownPage, {
+      "exercises": this.exercises
+    });
   }
 
   skip() {
     this.navCtrl.pop();
   }
+
 }

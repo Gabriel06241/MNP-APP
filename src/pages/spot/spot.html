@@ -17,24 +17,29 @@
       </button>
     </ion-buttons>
   </ion-navbar>
-
 </ion-header>
 
 
 <ion-content padding>
   <ion-item>
     <ion-label floating>Nombre</ion-label>
-    <ion-input type='text'></ion-input>
+    <ion-input type='text' [(ngModel)]="spotName"></ion-input>
   </ion-item>
   <ion-item>
     <ion-label floating>Descripción</ion-label>
-    <ion-textarea type='text'></ion-textarea>
+    <ion-textarea type='text' rows="3" maxLength="500" [(ngModel)]="spotDescription"></ion-textarea>
   </ion-item>
+  <br>
   <ion-card>
     <ion-card-content>
       <img [src]="base64Image" *ngIf="base64Image" />
     </ion-card-content>
   </ion-card>
+  <!-- <ion-card>
+    <ion-card-content>
+      <img [src]="pathImage" *ngIf="pathImage" async />
+    </ion-card-content>
+  </ion-card> -->
   <br>
-  <button ion-button block>Guardar Spot</button>
+  <button ion-button block (click)="saveSpot()">Guardar Spot</button>
 </ion-content>
