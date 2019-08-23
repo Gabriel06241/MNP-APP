@@ -1,0 +1,15 @@
+.ios,
+.md {
+  page-spots-map {
+    .scroll {
+      height: 100%
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+    ion-icon {
+      font-size: 1.5em;
+    }
+  }
+}

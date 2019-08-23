@@ -1,0 +1,44 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle *ngIf="!isSearchbarOpening">
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title *ngIf="!isSearchbarOpening">
+      Rutinas
+    </ion-title>
+    <ion-searchbar *ngIf="isSearchbarOpening" showCancelButton="true" (search)="onSearch($event)" (ionCancel)="isSearchbarOpening=false"></ion-searchbar>
+    <ion-buttons end>
+      <button ion-button icon-only *ngIf="!isSearchbarOpening" (click)="isSearchbarOpening=true">
+        <ion-icon name="search"></ion-icon>
+      </button>
+      <button ion-button icon-only (click)="presentPopover($event)">
+        <ion-icon name="funnel"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+
+<!-- <ion-content padding> -->
+<ion-content padding drag-content="false">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-grid>
+    <ion-row>
+      <ion-col *ngFor="let item of collection" col-6 no-padding>
+        <ion-card (click)="getExerciseFromRoutine(item)">
+          <ion-card-header>
+            {{item.title}}
+            <p>{{item.category}}</p>
+          </ion-card-header>
+          <img [src]="item.imageUrl" width="100px;" height="80px;">
+          <ion-card-content class="fixline">
+            {{item.body}}
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

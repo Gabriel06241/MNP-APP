@@ -1,0 +1,94 @@
+{
+  "spots": [{
+      "nombre": "EPSA",
+      "direccion": "CC Palmetto Plaza, Cl. 9 #48-81, Cali, Valle del Cauca",
+      "latitude": 3.411771,
+      "longitude": -76.540758,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "Institución Universitaria Antonio José Camacho UNIAJC Central",
+      "direccion": "Avenida 6 norte # 28n 102, Cali, Valle del Cauca",
+      "latitude": 3.470229,
+      "longitude": -76.527273,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "Constructora Bolivar",
+      "direccion": "Calle 29 norte # 6BN 22 Santa monica, Cali, Valle del Cauca",
+      "latitude": 3.471964,
+      "longitude": -76.530084,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "BIDDA Cali",
+      "direccion": "Calle 28N # 2BN - 86, Cali, Valle del Cauca",
+      "latitude": 3.469951,
+      "longitude": -76.526265,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "Eficacia S.A.",
+      "direccion": "23A, Av. 5 Nte. #41 Norte35, Cali, Valle del Cauca",
+      "latitude": 3.464598,
+      "longitude": -76.526996,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "El ESPECTADOR",
+      "direccion": "Av. las Américas #19-90, Cali, Valle del Cauca",
+      "latitude": 3.459196,
+      "longitude": -76.528374,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "ETIMARCAS",
+      "direccion": "Calle 38AN, Cali, Valle del Cauca",
+      "latitude": 3.477650,
+      "longitude": -76.525140,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "FELINUX LTDA",
+      "direccion": "Cra. 53 #11-32, Ap. 302 Bloque 1 Paseo de Alejandría, Cali, Valle del Cauca",
+      "latitude": 3.407947,
+      "longitude": -76.538189,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "Parquesoft",
+      "direccion": "Cl. 25 #127-220, Cali, Valle del Cauca",
+      "latitude": 3.332871,
+      "longitude": -76.523909,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "VOV Solutions",
+      "direccion": "Cl. 15a #10160, Cali, Valle del Cauca",
+      "latitude": 3.366571,
+      "longitude": -76.531823,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "RD Casa de Software s.a.s.",
+      "direccion": "Cra. 70 #12-56, Cali, Valle del Cauca",
+      "latitude": 3.398017,
+      "longitude": -76.538442,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "Colombia Software Ltda",
+      "direccion": "Calle 26N 5AN 67, Cali, valle",
+      "latitude": 3.468127,
+      "longitude": -76.528578,
+      "pictures": ["picture1.png", "picture2.png"]
+    },
+    {
+      "nombre": "El Lab Coworking Cali",
+      "direccion": "Calle 4B #35A-11, Cali, Valle del Cauca",
+      "latitude": 3.432436,
+      "longitude": -76.545308,
+      "pictures": ["picture1.png", "picture2.png"]
+    }
+  ]
+}

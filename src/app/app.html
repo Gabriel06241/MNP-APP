@@ -1,0 +1,44 @@
+<div class="{{global.state['theme']}}">
+  <ion-menu side="left" id="authenticated" [content]="content">
+    <ion-header>
+      <ion-toolbar class="user-profile">
+        <ion-grid>
+          <ion-row>
+            <ion-col col-4>
+              <div class="user-avatar" (click)="presentActionSheet()">
+                <img [src]="profilePicture">
+              </div>
+            </ion-col>
+            <ion-col padding-top col-8>
+              <!-- <h2 ion-text class="no-margin bold text-white"> -->
+              <h2 ion-text class="no-margin bold text-white" *ngIf="userProvider.getCurrentUser().fullName">
+                {{userProvider.getCurrentUser().fullName}}
+              </h2>
+              <!-- <span ion-text color="light"> -->
+              <span ion-text color="light" *ngIf="userProvider.getCurrentUser().email">
+                {{userProvider.getCurrentUser().email}}
+              </span>
+            </ion-col>
+          </ion-row>
+
+        </ion-grid>
+
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-list class="user-list">
+        <button ion-item menuClose class="text-1x" *ngFor="let menuItem of pages" (click)="openPage(menuItem)">
+          <!-- <button ion-item menuClose class="text-1x"> -->
+          <ion-icon item-left [name]="menuItem.icon" color="primary"></ion-icon>
+          <span ion-text color="primary">{{menuItem.title}}</span>
+        </button>
+      </ion-list>
+
+    </ion-content>
+
+  </ion-menu>
+
+  <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
+  <ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
+</div>

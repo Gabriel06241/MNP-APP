@@ -1,0 +1,51 @@
+<!--
+  Generated template for the SpotsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <ion-navbar color="primary">
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Spots</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="allUbicationsMap()">
+        <ion-icon md="md-pin"></ion-icon>
+      </button>
+      <button ion-button (click)="createSpot()">
+        <ion-icon name="md-add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-card *ngFor="let card of cards; let i=index">
+    <ion-item>
+      <ion-avatar item-start>
+        <img [src]="card.avatarImageUrl" (click)="avatarTapped(card)">
+      </ion-avatar>
+      <h2>{{card.name}}</h2>
+      <p>{{card.date}}</p>
+    </ion-item>
+    <img [src]="card.postImageUrl" (click)="imageTapped(card)">
+    <ion-card-content>
+      <p>{{card.postText}}</p>
+    </ion-card-content>
+    <ion-row>
+      <ion-col>
+        <rating [(ngModel)]="card.rating" color="card.color" [(readOnly)]="card.readOnly" max="5" emptyStarIconName="star-outline" halfStarIconName="star-half" starIconName="star" nullable="false" (ngModelChange)="onModelChange($event)"></rating>
+      </ion-col>
+      <!-- Selected rating: {{rating}} -->
+      <!-- </ion-col>
+      <ion-col center text-center>
+        <ion-note>
+          {{card.timestamp}}
+        </ion-note>
+      </ion-col>  -->
+    </ion-row>
+  </ion-card>
+
+</ion-content>

@@ -1,0 +1,61 @@
+import { CountdownPage } from './../countdown/countdown';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, Slides } from 'ionic-angular';
+
+/**
+ * Generated class for the SlidePreheatingPage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
+ */
+
+@IonicPage()
+@Component({
+  selector: 'page-slide-preheating',
+  templateUrl: 'slide-preheating.html',
+})
+export class SlidePreheatingPage {
+
+  @ViewChild('slider') slider: Slides;
+  slideIndex = 0;
+  slides = [
+    {
+      title: 'Recomendaciones',
+      imageUrl: 'assets/imgs/slides/slide2.jpg',
+      description: 'Antes de iniciar cualquier actividad, el prácticante debe tener una sesión de movilidad articular y calentamiento general de 15 a 20 minutos. \n \n Ademas de un gran trabajo previo en aspectos técnicos como trote, carrera, salto y recepción con el fin de que active sus funciones motoras, fuerza y resistencia en las articulaciones y músculos, esto contribuira a reducir cualquier tipo de lesión. \n\n\n Los menores de edad deben estar acompañados de un adulto responsable.',
+      imageStageDetail: ''
+    },
+    {
+      title: 'Etapa 1 - Movilidad articular',
+      imageUrl: 'assets/imgs/slides/slide3.jpg',
+      description: 'Antes de iniciar la práctica, se debe hacer un proceso de movilidad articular en cada una de las articulaciones, este se hace siguiendo un orden ascedente (desde los tobillos hasta el cuello), o descendente (desde el cuello hasta los tobillos), el movimiento por cada articulación, es de 15 a 20 segundos, hasta completar.',
+      imageStageDetail: ''
+    },
+    {
+      title: 'Etapa 2 - Calentamiento',
+      imageUrl: 'assets/imgs/slides/slide4.jpg',
+      description: 'Para iniciar el calentamiento general, se da inicio con 10 minutos como mínimo de trote con desplazamiento por un área especifica, luego se intercalan ejercicios que se relacionen con los movimientos que se van a trabajar en la practica de la rutina.',
+      imageStageDetail: ''
+    },
+    {
+      title: 'Etapa 3 - Estiramiento (Post entrenamiento)',
+      imageUrl: 'assets/imgs/slides/slide5.jpg',
+      description: 'El estiramiento hace referencia a la práctica de ejercicios suaves y mantenidos para aumentar el rango de mantenimiento en las articulaciones. \n El estiramiento debe ser progresivo, sin forzar el músculo hasta sentir una tensión moderada y se sostendrá esta posición entre 10 y 15 segundos si no se siente dolor.',
+      imageStageDetail: ''
+    }
+  ];
+
+  constructor(public navCtrl: NavController) { }
+
+  onSlideChanged() {
+    this.slideIndex = this.slider.getActiveIndex();
+  }
+
+  goToApp() {
+    this.navCtrl.setRoot(CountdownPage);
+  }
+
+  skip() {
+    this.navCtrl.pop();
+  }
+}
